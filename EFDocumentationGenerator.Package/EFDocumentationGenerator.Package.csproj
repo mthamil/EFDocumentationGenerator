@@ -14,8 +14,8 @@
     <ProjectGuid>{3B89C2CA-0B02-4DF5-9BAB-7E23C2ADA5F8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DocumentationGenerator</RootNamespace>
-    <AssemblyName>DocumentationGenerator</AssemblyName>
+    <RootNamespace>EntityDocumentationGenerator</RootNamespace>
+    <AssemblyName>EntityDocumentationGenerator</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>false</IncludeAssemblyInVSIXContainer>
