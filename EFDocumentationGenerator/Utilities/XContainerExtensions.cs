@@ -17,7 +17,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace EntityDocExtension.Utilities
+namespace DocumentationGenerator.Utilities
 {
 	/// <summary>
 	/// Provides extension methods for <see cref="XElement"/>s.

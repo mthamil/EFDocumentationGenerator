@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data;
-using EntityDocExtension;
+using DocumentationGenerator;
 using Moq;
 using Xunit;
 

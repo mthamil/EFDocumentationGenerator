@@ -14,10 +14,10 @@
 //  limitations under the License.
 
 using System.ComponentModel.Composition;
-using EntityDocExtension.Utilities;
+using DocumentationGenerator.Utilities;
 using Microsoft.Data.Entity.Design.Extensibility;
 
-namespace EntityDocExtension
+namespace DocumentationGenerator
 {
 	[PartCreationPolicy(CreationPolicy.Shared)]
 	[Export(typeof(IModelGenerationExtension))]

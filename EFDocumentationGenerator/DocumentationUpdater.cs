@@ -16,9 +16,9 @@
 using System;
 using System.Linq;
 using System.Xml.Linq;
-using EntityDocExtension.Utilities;
+using DocumentationGenerator.Utilities;
 
-namespace EntityDocExtension
+namespace DocumentationGenerator
 {
 	/// <summary>
 	/// Updates XML EDMX file documentation nodes.

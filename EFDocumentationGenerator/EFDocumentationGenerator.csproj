@@ -8,8 +8,8 @@
     <ProjectGuid>{4801E905-4B73-4ED5-942C-1FBB90498EE4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EntityDocExtension</RootNamespace>
-    <AssemblyName>EntityDocExtension</AssemblyName>
+    <RootNamespace>DocumentationGenerator</RootNamespace>
+    <AssemblyName>EFDocumentationGenerator</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PlatformTarget>x86</PlatformTarget>

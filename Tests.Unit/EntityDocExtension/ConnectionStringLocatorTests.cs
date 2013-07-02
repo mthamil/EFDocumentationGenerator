@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using EntityDocExtension;
+using DocumentationGenerator;
 using EnvDTE;
 using Moq;
 using Tests.Unit.Support;

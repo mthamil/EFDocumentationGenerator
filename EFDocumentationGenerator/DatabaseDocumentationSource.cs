@@ -18,7 +18,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 
-namespace EntityDocExtension
+namespace DocumentationGenerator
 {
 	/// <summary>
 	/// An entity documentation source that pulls documentation from a database.

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using EntityDocExtension;
-using EntityDocExtension.Utilities;
+using DocumentationGenerator;
+using DocumentationGenerator.Utilities;
 using Moq;
 using Xunit;
 

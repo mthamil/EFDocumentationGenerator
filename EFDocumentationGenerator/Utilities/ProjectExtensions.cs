@@ -16,7 +16,7 @@
 using System.Runtime.Versioning;
 using EnvDTE;
 
-namespace EntityDocExtension.Utilities
+namespace DocumentationGenerator.Utilities
 {
 	/// <summary>
 	/// Contains extension methods for <see cref="Project"/>s.

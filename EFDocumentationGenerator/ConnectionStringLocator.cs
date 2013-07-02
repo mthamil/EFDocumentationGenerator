@@ -19,7 +19,7 @@ using System.Linq;
 using System.Xml.Linq;
 using EnvDTE;
 
-namespace EntityDocExtension
+namespace DocumentationGenerator
 {
 	/// <summary>
 	/// Locates and extracts the connection string to use for model updates.
