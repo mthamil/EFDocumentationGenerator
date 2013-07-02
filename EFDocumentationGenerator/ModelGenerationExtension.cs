@@ -14,7 +14,9 @@
 //  limitations under the License.
 
 using System.ComponentModel.Composition;
+using System.Xml.Linq;
 using DocumentationGenerator.Utilities;
+using EnvDTE;
 using Microsoft.Data.Entity.Design.Extensibility;
 
 namespace DocumentationGenerator
@@ -42,16 +44,7 @@ namespace DocumentationGenerator
 		/// </param>
 		public void OnAfterModelGenerated(ModelGenerationExtensionContext context)
 		{
-			bool isEFv2Model = context.Project.IsEntityFrameworkV2Model();
-			if (isEFv2Model)
-			{
-				var connectionString = new ConnectionStringLocator().Locate(context.Project);
-				using (var docSource = new DatabaseDocumentationSource(connectionString.ToString()))
-				{
-					new DocumentationUpdater(docSource)
-							.UpdateDocumentation(context.CurrentDocument);
-				}
-			}
+			UpdateModel(context.Project, context.CurrentDocument);
 		}
 
 		/// <summary>
@@ -82,14 +75,19 @@ namespace DocumentationGenerator
 		/// </param>
 		public void OnAfterModelUpdated(UpdateModelExtensionContext context)
 		{
-			bool isEFv2Model = context.Project.IsEntityFrameworkV2Model();
+			UpdateModel(context.Project, context.CurrentDocument);
+		}
+
+		private void UpdateModel(Project project, XDocument currentDocument)
+		{
+			bool isEFv2Model = project.IsEntityFrameworkV2Model();
 			if (isEFv2Model)
 			{
-				var connectionString = new ConnectionStringLocator().Locate(context.Project);
+				var connectionString = new ConnectionStringLocator().Locate(project);
 				using (var docSource = new DatabaseDocumentationSource(connectionString.ToString()))
 				{
 					new DocumentationUpdater(docSource)
-							.UpdateDocumentation(context.CurrentDocument);
+							.UpdateDocumentation(currentDocument);
 				}
 			}
 		}
