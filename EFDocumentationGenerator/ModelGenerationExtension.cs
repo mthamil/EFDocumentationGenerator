@@ -19,6 +19,9 @@ using Microsoft.Data.Entity.Design.Extensibility;
 
 namespace DocumentationGenerator
 {
+	/// <summary>
+	/// The entry point to the extension.
+	/// </summary>
 	[PartCreationPolicy(CreationPolicy.Shared)]
 	[Export(typeof(IModelGenerationExtension))]
 	public class ModelGenerationExtension : IModelGenerationExtension

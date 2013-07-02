@@ -38,6 +38,26 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Debug\EFDocumentationGenerator.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Release\EFDocumentationGenerator.xml</DocumentationFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>
@@ -47,6 +67,7 @@
     <Reference Include="Microsoft.Data.Entity.Design.Extensibility, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\PublicAssemblies\Microsoft.Data.Entity.Design.Extensibility.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.ExtensibilityHosting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>True</SpecificVersion>
@@ -61,7 +82,7 @@
     <Reference Include="Microsoft.CSharp">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.XML" />
+    <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
@@ -73,9 +94,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\ProjectExtensions.cs" />
     <Compile Include="Utilities\XContainerExtensions.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <VsixContent Include="extension.vsixmanifest" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -95,105 +113,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Target Name="AfterBuild" DependsOnTargets="CreateVsixPackage" />
-  <!--
-    Call the <CreateZipPackage> inline MSBuild task to create a .vsix (zip) file with project items whose "Build Action" is "VsixContent"
-   -->
-  <Target Name="CreateVsixPackage">
-    <ItemGroup>
-      <!-- Always include the output assembly in the .vsix file -->
-      <VsixContent Include="$(OutDir)$(TargetFileName)" />
-      <VsixFilePath Include="$(OutDir)$(TargetName).vsix" />
-    </ItemGroup>
-    <CreateZipPackage ZipFileContents="@(VsixContent)" ZipFilePath="@(VsixFilePath)" />
-  </Target>
-  <!--
-        Inline MSBuild task to create a zip file with System.IO.Packaging APIs
-        [IN] ZipFileContents: ITaskItems to include in the zip file
-        [IN] ZipFilePath: pathname of the output zip file
-  -->
-  <UsingTask TaskName="CreateZipPackage" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" RequiredRuntime="v4.0">
-    <ParameterGroup>
-      <ZipFileContents ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
-      <ZipFilePath ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" />
-    </ParameterGroup>
-    <Task>
-      <Reference Include="$(programfiles)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\WindowsBase.dll" />
-      <Using Namespace="System.IO.Packaging" />
-      <Using Namespace="System.Net.Mime" />
-      <Code Type="Fragment" Language="cs"><![CDATA[
-          Dictionary<String, String> fileExtensionMimeTypeLookup = new Dictionary<String, String>() {
-                                    {".vsixmanifest", System.Net.Mime.MediaTypeNames.Text.Xml },
-                                    {".dll", System.Net.Mime.MediaTypeNames.Application.Octet },
-                                    {".exe", System.Net.Mime.MediaTypeNames.Application.Octet },
-                                    {".txt", System.Net.Mime.MediaTypeNames.Text.Plain },
-                                    {".htm", System.Net.Mime.MediaTypeNames.Text.Html },
-                                    {".html", System.Net.Mime.MediaTypeNames.Text.Html },
-                                    {".rtf", System.Net.Mime.MediaTypeNames.Text.RichText },
-                                    {".vsix", System.Net.Mime.MediaTypeNames.Application.Zip },
-                                    {".zip", System.Net.Mime.MediaTypeNames.Application.Zip },
-                                    {".jpg", System.Net.Mime.MediaTypeNames.Image.Jpeg },
-                                    {".jpeg", System.Net.Mime.MediaTypeNames.Image.Jpeg },
-                                    {".gif", System.Net.Mime.MediaTypeNames.Image.Gif },
-                                    {".tiff", System.Net.Mime.MediaTypeNames.Image.Tiff }
-                                };
-          
-          if (ZipFileContents.Length > 0)
-          {
-            try
-            {
-              List<String> filesProcessed = new List<String>();
-              
-              // Create Zip package
-              using (Package package = ZipPackage.Open(ZipFilePath.ItemSpec, FileMode.Create))
-              {
-                  foreach (ITaskItem file in ZipFileContents
-                      //Always exclude the output file in case it is in Files
-                      .Where(file => !string.Equals(new FileInfo(file.ItemSpec).FullName,
-                                                    new FileInfo(ZipFilePath.ItemSpec).FullName,
-                                                    StringComparison.OrdinalIgnoreCase)))
-                  {
-                      FileInfo fileInfo = new FileInfo(file.ItemSpec);
-                      filesProcessed.Add(fileInfo.Name);
-                     
-                      Uri filePartUri = PackUriHelper.CreatePartUri(new Uri(fileInfo.Name, UriKind.Relative));
-
-                      // Get MIME type
-                      String mimeType = String.Empty;
-                      if(fileExtensionMimeTypeLookup.TryGetValue(fileInfo.Extension, out mimeType) == false)
-                      {
-                        // Default to Xml
-                        mimeType = System.Net.Mime.MediaTypeNames.Text.Xml;
-                      }
-                      
-                      // Create package part
-                      PackagePart packagePart = package.CreatePart(filePartUri, mimeType);
-                      
-                      // Copy streams intp package part
-                      using (Stream sourceStream = new FileStream(file.ItemSpec, FileMode.Open, FileAccess.Read))
-                      {
-                          Stream targetStream = packagePart.GetStream();
-                          
-                          const int bufSize = 0x1000; //4KB
-                          byte[] buf = new byte[bufSize];
-                          int bytesRead = 0;
-                          while ((bytesRead = sourceStream.Read(buf, 0, bufSize)) > 0)
-                          {
-                              targetStream.Write(buf, 0, bytesRead);
-                          }
-                      }
-                  }
-                  
-                  Log.LogMessage(String.Format("Created \"{0}\" with files \"{1}\"", ZipFilePath.ItemSpec, String.Join(", ", filesProcessed.ToArray())), MessageImportance.High);
-              }
-            }
-            catch (Exception ex)
-            {
-                //Report uncaught exceptions as a build failure.
-                Log.LogErrorFromException(ex);
-            }
-          }
-        ]]></Code>
-    </Task>
-  </UsingTask>
 </Project>
