@@ -1,0 +1,19 @@
+   Entity Designer Documentation Generator
+   Copyright 2013 Matthew Hamilton - https://github.com/mthamil/EFDocumentationGenerator
+
+   The following libraries provide testing support: 
+        xUnit.net is used as the unit testing framework
+        and is released under the Microsoft Public License (Ms-PL):
+            http://xunit.codeplex.com/
+
+        Moq is used for mock objects and is released under the BSD license:
+            Copyright (c) 2007. Clarius Consulting, Manas Technology Solutions, InSTEDD
+            http://code.google.com/p/moq/
+            All rights reserved.
+
+   This software is originally based on and inspired by 
+   Entity Framework SQL Server Document Generator which is
+   licensed under Apache 2.0 and located at: 
+        http://eftsqldocgenerator.codeplex.com/
+        Copyright (c) 2011, Cyril Durand
+   
