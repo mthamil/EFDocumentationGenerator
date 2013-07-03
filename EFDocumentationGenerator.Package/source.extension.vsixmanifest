@@ -5,14 +5,12 @@
     <DisplayName>Entity Designer Documentation Generator</DisplayName>
     <Description xml:space="preserve">An extension for the ADO.NET Entity Designer that populates documentation from the database.</Description>
     <MoreInfo>https://github.com/mthamil/EFDocumentationGenerator</MoreInfo>
-    <License>LICENSE</License>
+    <License>LICENSE.txt</License>
   </Metadata>
   <Installation>
     <InstallationTarget Version="[11.0,12.0)" Id="Microsoft.VisualStudio.Premium" />
     <InstallationTarget Version="[11.0,12.0)" Id="Microsoft.VisualStudio.Pro" />
     <InstallationTarget Version="[11.0,12.0)" Id="Microsoft.VisualStudio.Ultimate" />
-    <InstallationTarget Version="[11.0,12.0)" Id="Microsoft.VisualStudio.VSWinExpress" />
-    <InstallationTarget Version="[11.0,12.0)" Id="Microsoft.VisualStudio.VSWinDesktopExpress" />
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />
