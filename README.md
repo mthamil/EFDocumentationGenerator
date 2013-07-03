@@ -8,3 +8,6 @@ during code generation, enabling the addition of comments to generated classes a
 
 The plugin searches the project that an .edmx file belongs to for an App.config containing an Entity
 Framework connection string so that it can connect to the database.
+
+You can download the extension from the Visual Studio gallery: 
+http://visualstudiogallery.msdn.microsoft.com/0f78b512-3214-4845-a319-0c5fd0ebcf43
