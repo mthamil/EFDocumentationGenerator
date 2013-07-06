@@ -21,7 +21,7 @@ using System.Text;
 namespace DocumentationGenerator
 {
 	/// <summary>
-	/// An entity documentation source that pulls documentation from a database.
+	/// An entity documentation source that pulls documentation from a SQL Server database.
 	/// </summary>
 	public class DatabaseDocumentationSource : IDocumentationSource, IDisposable
 	{
@@ -44,21 +44,26 @@ namespace DocumentationGenerator
 		/// <see cref="IDocumentationSource.GetDocumentation"/>
 		public string GetDocumentation(string entityName, string propertyName = null)
 		{
-			var query = new StringBuilder(@"SELECT [value] 
-                                            FROM fn_listextendedproperty (
-												'MS_Description', 
-												'schema', 'dbo', 
-												'table', @tableName,").AppendLine();
+			bool useColumn = propertyName != null;
 
-			query.Append(propertyName == null ? "null, null" : "'column', @columnName")
-				 .Append(")");
+			var query = String.Format(@"
+						SELECT [MSDescription].[value] FROM [sys].[schemas]
+						CROSS APPLY fn_listextendedproperty (
+							'MS_Description', 
+							'schema', [sys].[schemas].[name], 
+							'table', @tableName,
+							 {0}, {1}) as MSDescription
+						WHERE [sys].[schemas].[name] <> 'sys' AND 
+							  [sys].[schemas].[name] NOT LIKE 'db\_%' ESCAPE '\'",
+					useColumn ? "'column'" : "null",
+					useColumn ? "@columnName" : "null");
 
 			using (var command = _connection.CreateCommand())
 			{
-				command.CommandText = query.ToString();
+				command.CommandText = query;
 				command.Parameters.Add(new SqlParameter("tableName", entityName));
 
-				if (propertyName != null)
+				if (useColumn)
 					command.Parameters.Add(new SqlParameter("columnName", propertyName));
 
 				return command.ExecuteScalar() as string;
