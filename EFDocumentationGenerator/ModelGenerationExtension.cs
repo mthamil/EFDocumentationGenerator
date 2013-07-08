@@ -14,6 +14,7 @@
 //  limitations under the License.
 
 using System.ComponentModel.Composition;
+using System.Data.SqlClient;
 using System.Xml.Linq;
 using DocumentationGenerator.Utilities;
 using EnvDTE;
@@ -44,7 +45,9 @@ namespace DocumentationGenerator
 		/// </param>
 		public void OnAfterModelGenerated(ModelGenerationExtensionContext context)
 		{
-			UpdateModel(context.Project, context.CurrentDocument);
+			// When in Update mode, both methods will be called and only one of them needs to execute.
+			if (context.WizardKind == WizardKind.Generate)
+				UpdateModel(context.Project, context.CurrentDocument, context.WizardKind);
 		}
 
 		/// <summary>
@@ -75,21 +78,38 @@ namespace DocumentationGenerator
 		/// </param>
 		public void OnAfterModelUpdated(UpdateModelExtensionContext context)
 		{
-			UpdateModel(context.Project, context.CurrentDocument);
+			UpdateModel(context.Project, context.CurrentDocument, context.WizardKind);
 		}
 
-		private void UpdateModel(Project project, XDocument currentDocument)
+		private void UpdateModel(Project project, XDocument currentDocument, WizardKind mode)
 		{
 			bool isEFv2Model = project.IsEntityFrameworkV2Model();
-			if (isEFv2Model)
+			if (!isEFv2Model)
+				return;
+
+			var logger = new OutputWindowLogger(project.DTE, EntityDesignerPaneName);
+
+			// Attempt to find the connection string.
+			SqlConnectionStringBuilder connectionString;
+			try
 			{
-				var connectionString = new ConnectionStringLocator().Locate(project);
-				using (var docSource = new DatabaseDocumentationSource(connectionString.ToString()))
-				{
-					new DocumentationUpdater(docSource)
-							.UpdateDocumentation(currentDocument);
-				}
+				connectionString = new ConnectionStringLocator().Locate(project);
+			}
+			catch (ConnectionStringLocationException exception)
+			{
+				logger.Log("Connection string could not be located for project '{0}': {1}.", project.Name, exception.Message);
+				if (mode == WizardKind.Generate)
+					logger.Log("Try updating the model after initial generation and connection string has been saved to App.config.");
+				return;
+			}
+				
+			using (var docSource = new DatabaseDocumentationSource(connectionString.ToString()))
+			{
+				new DocumentationUpdater(docSource)
+						.UpdateDocumentation(currentDocument);
 			}
 		}
+
+		private const string EntityDesignerPaneName = "Entity Documentation Generator";
 	}
 }

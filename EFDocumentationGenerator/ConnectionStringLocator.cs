@@ -35,13 +35,19 @@ namespace DocumentationGenerator
 			var appConfigItem = project.ProjectItems
 				.Cast<ProjectItem>()
 				.Where(item => item.ProjectItems == null || item.ProjectItems.Count == 0)
-				.Single(item => string.Equals(item.Name, "App.config", StringComparison.InvariantCultureIgnoreCase));
+				.SingleOrDefault(item => string.Equals(item.Name, ConfigName, StringComparison.InvariantCultureIgnoreCase));
+
+			if (appConfigItem == null)
+				throw new ConnectionStringLocationException(String.Format("'{0}' file does not exist.", ConfigName));
 
 			var appConfigFileName = appConfigItem.FileNames[0];
 			var appConfig = XDocument.Load(appConfigFileName);
 			var connectionStringsElement = appConfig
 				.Elements(XName.Get("configuration")).Single()
 				.Elements(XName.Get("connectionStrings"));
+
+			if (!connectionStringsElement.Any())
+				throw new ConnectionStringLocationException(String.Format("No connection strings found in '{0}' file.", ConfigName));
 
 			var entityConnString = connectionStringsElement
 				.Elements(XName.Get("add"))
@@ -56,5 +62,7 @@ namespace DocumentationGenerator
 
 			return new SqlConnectionStringBuilder(connectionString);
 		}
+
+		private const string ConfigName = "App.config";
 	}
 }

@@ -92,6 +92,10 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConnectionStringLocationException.cs" />
+    <Compile Include="EnvDTEConstants.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="OutputWindowLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.Versions.cs" />
     <Compile Include="ConnectionStringLocator.cs" />
     <Compile Include="DatabaseDocumentationSource.cs" />

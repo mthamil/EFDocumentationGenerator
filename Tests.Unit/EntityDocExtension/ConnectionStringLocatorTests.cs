@@ -33,7 +33,7 @@ namespace Tests.Unit.EntityDocExtension
 		}
 
 		[Fact]
-		public void Test_Find_FromProject()
+		public void Test_Locate_FromProject()
 		{
 			using (var tempConfigFile = new TemporaryFile(validAppConfigXml))
 			{
@@ -55,6 +55,38 @@ namespace Tests.Unit.EntityDocExtension
 				Assert.Equal("Test", connectionString.InitialCatalog);
 				Assert.True(connectionString.IntegratedSecurity);
 				Assert.True(connectionString.MultipleActiveResultSets);
+			}
+		}
+
+		[Fact]
+		public void Test_Locate_No_Config_File()
+		{
+			// Act/Assert.
+			Assert.Throws<ConnectionStringLocationException>(() => 
+				locator.Locate(project.Object));
+		}
+
+		[Fact]
+		public void Test_Locate_No_ConnectionString_In_Config_File()
+		{
+			using (var tempConfigFile = new TemporaryFile(
+												@"<?xml version='1.0' encoding='utf-8'?>
+												<configuration>
+												</configuration>"))
+			{
+				// Arrange.
+				var appConfigItem = new Mock<ProjectItem> { DefaultValue = DefaultValue.Mock };
+				appConfigItem.SetupGet(pi => pi.ProjectItems)
+				             .Returns(new Mock<ProjectItems>  {  DefaultValue = DefaultValue.Mock }.Object);
+
+				appConfigItem.SetupGet(pi => pi.Name).Returns("App.config");
+				appConfigItem.Setup(pi => pi.get_FileNames(0)).Returns(tempConfigFile.File.FullName);
+
+				projectItems.Add(appConfigItem.Object);
+
+				// Act/Assert.
+				Assert.Throws<ConnectionStringLocationException>(() =>
+					locator.Locate(project.Object));
 			}
 		}
 
