@@ -108,6 +108,8 @@ namespace DocumentationGenerator
 				new DocumentationUpdater(docSource)
 						.UpdateDocumentation(currentDocument);
 			}
+
+			logger.Log("Documentation generation succeeded.");
 		}
 
 		private const string EntityDesignerPaneName = "Entity Documentation Generator";

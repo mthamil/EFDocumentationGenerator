@@ -38,7 +38,7 @@ namespace DocumentationGenerator
 				.SingleOrDefault(item => string.Equals(item.Name, ConfigName, StringComparison.InvariantCultureIgnoreCase));
 
 			if (appConfigItem == null)
-				throw new ConnectionStringLocationException(String.Format("'{0}' file does not exist.", ConfigName));
+				throw new ConnectionStringLocationException(String.Format("{0} file does not exist", ConfigName));
 
 			var appConfigFileName = appConfigItem.FileNames[0];
 			var appConfig = XDocument.Load(appConfigFileName);
@@ -47,7 +47,7 @@ namespace DocumentationGenerator
 				.Elements(XName.Get("connectionStrings"));
 
 			if (!connectionStringsElement.Any())
-				throw new ConnectionStringLocationException(String.Format("No connection strings found in '{0}' file.", ConfigName));
+				throw new ConnectionStringLocationException(String.Format("No valid connection strings found in {0} file", ConfigName));
 
 			var entityConnString = connectionStringsElement
 				.Elements(XName.Get("add"))
