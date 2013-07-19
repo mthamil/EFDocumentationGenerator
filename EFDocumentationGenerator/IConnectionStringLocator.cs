@@ -13,16 +13,20 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
+using System.Data.SqlClient;
+using EnvDTE;
+
 namespace DocumentationGenerator
 {
 	/// <summary>
-	/// Constants that are common to all Visual Studio programming languages.
+	/// Locates and extracts the connection string to use for model updates.
 	/// </summary>
-	internal class EnvDTEConstants
+	public interface IConnectionStringLocator
 	{
 		/// <summary>
-		/// The Output window.
+		/// Attempts to find a database connection string in the App.config file of a project.
 		/// </summary>
-		public const string vsWindowKindOutput = "{34E76E81-EE4A-11D0-AE2E-00A0C90FFFC3}";
+		/// <param name="project">The project to search for a connection string</param>
+		SqlConnectionStringBuilder Locate(Project project);
 	}
 }

@@ -22,7 +22,7 @@ namespace DocumentationGenerator.Utilities
 	/// <summary>
 	/// Provides extension methods for <see cref="XElement"/>s.
 	/// </summary>
-	public static class XContainerExtensions
+	internal static class XContainerExtensions
 	{
 		/// <summary>
 		/// Provides access to edm schema XML namespace-specific operations.

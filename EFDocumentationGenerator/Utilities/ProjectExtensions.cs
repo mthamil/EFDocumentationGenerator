@@ -21,7 +21,7 @@ namespace DocumentationGenerator.Utilities
 	/// <summary>
 	/// Contains extension methods for <see cref="Project"/>s.
 	/// </summary>
-	public static class ProjectExtensions
+	internal static class ProjectExtensions
 	{
 		/// <summary>
 		/// Returns true if the specified project targets .NET Framework 4.0; otherwise returns false.

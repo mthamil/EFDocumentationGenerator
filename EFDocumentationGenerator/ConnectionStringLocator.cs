@@ -14,6 +14,7 @@
 //  limitations under the License.
 
 using System;
+using System.ComponentModel.Composition;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Xml.Linq;
@@ -24,7 +25,8 @@ namespace DocumentationGenerator
 	/// <summary>
 	/// Locates and extracts the connection string to use for model updates.
 	/// </summary>
-	public class ConnectionStringLocator
+	[Export(typeof(IConnectionStringLocator))]
+	public class ConnectionStringLocator : IConnectionStringLocator
 	{
 		/// <summary>
 		/// Attempts to find a database connection string in the App.config file of a project.

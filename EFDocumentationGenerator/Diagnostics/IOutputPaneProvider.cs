@@ -1,4 +1,4 @@
-﻿//  Entity Designer Documentation Generator
+//  Entity Designer Documentation Generator
 //  Copyright 2013 Matthew Hamilton - matthamilton@live.com
 // 
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +13,19 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-namespace DocumentationGenerator
+using EnvDTE;
+
+namespace DocumentationGenerator.Diagnostics
 {
 	/// <summary>
-	/// Constants that are common to all Visual Studio programming languages.
+	/// Provides a means for retrieving an <see cref="OutputWindowPane"/>.
 	/// </summary>
-	internal class EnvDTEConstants
+	public interface IOutputPaneProvider
 	{
 		/// <summary>
-		/// The Output window.
+		/// Retrieves an <see cref="OutputWindowPane"/>.
 		/// </summary>
-		public const string vsWindowKindOutput = "{34E76E81-EE4A-11D0-AE2E-00A0C90FFFC3}";
+		/// <returns>An <see cref="OutputWindowPane"/></returns>
+		OutputWindowPane Get();
 	}
 }

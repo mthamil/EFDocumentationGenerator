@@ -70,6 +70,8 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>C:\Program Files (x86)\Common Files\microsoft shared\MSEnv\PublicAssemblies\envdte.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.VisualStudio.Shell.11.0, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Data.Entity.Design.Extensibility, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\PublicAssemblies\Microsoft.Data.Entity.Design.Extensibility.dll</HintPath>
@@ -93,9 +95,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConnectionStringLocationException.cs" />
+    <Compile Include="Diagnostics\DocGeneratorOutputPaneProvider.cs" />
+    <Compile Include="Diagnostics\ILogger.cs" />
+    <Compile Include="Diagnostics\IOutputPaneProvider.cs" />
+    <Compile Include="Diagnostics\OutputWindowLogger.cs" />
     <Compile Include="EnvDTEConstants.cs" />
-    <Compile Include="ILogger.cs" />
-    <Compile Include="OutputWindowLogger.cs" />
+    <Compile Include="IConnectionStringLocator.cs" />
     <Compile Include="Properties\AssemblyInfo.Versions.cs" />
     <Compile Include="ConnectionStringLocator.cs" />
     <Compile Include="DatabaseDocumentationSource.cs" />
@@ -104,6 +109,7 @@
     <Compile Include="ModelGenerationExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\ProjectExtensions.cs" />
+    <Compile Include="Utilities\ServiceProviderExtensions.cs" />
     <Compile Include="Utilities\XContainerExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
