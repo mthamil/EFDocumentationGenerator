@@ -59,6 +59,8 @@
   <ItemGroup>
     <Compile Include="EntityDocExtension\ConnectionStringLocatorTests.cs" />
     <Compile Include="EntityDocExtension\DatabaseDocumentationSourceTests.cs" />
+    <Compile Include="EntityDocExtension\Diagnostics\OutputPaneProviderTests.cs" />
+    <Compile Include="EntityDocExtension\Diagnostics\OutputWindowLoggerTests.cs" />
     <Compile Include="EntityDocExtension\DocumentationUpdaterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\TemporaryFile.cs" />

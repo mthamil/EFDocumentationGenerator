@@ -34,6 +34,11 @@ namespace DocumentationGenerator
 		/// <param name="project">The project to search for a connection string</param>
 		public SqlConnectionStringBuilder Locate(Project project)
 		{
+			// If there was no existing app.config file, check to see if the project had changes.
+			// If so, save the project and then check for the app.config.
+			if (!project.Saved)
+				project.Save();
+
 			// Try to find the app config file.
 			var appConfigItem = project.ProjectItems
 				.Cast<ProjectItem>()
@@ -42,6 +47,10 @@ namespace DocumentationGenerator
 
 			if (appConfigItem == null)
 				throw new ConnectionStringLocationException(String.Format("{0} file does not exist", ConfigName));
+
+			// If the app.config file is unsaved, it probably had a connection string added to it. Save it.
+			if (!appConfigItem.Saved)
+				appConfigItem.Save();
 
 			// Try to find the connection strings section.
 			var appConfigFileName = appConfigItem.FileNames[0];
@@ -61,7 +70,7 @@ namespace DocumentationGenerator
 					IgnoreCaseEquals(element.Attribute("providerName").Value, EntityProviderName));
 
 			if (entityConnElement == null)
-				throw new ConnectionStringLocationException(String.Format("{0} provider not found.", EntityProviderName));
+				throw new ConnectionStringLocationException(String.Format("Connection string for provider '{0}' not found.", EntityProviderName));
 
 			// Parse the connection string.
 			string entityConnString = entityConnElement.Attribute("connectionString").Value;

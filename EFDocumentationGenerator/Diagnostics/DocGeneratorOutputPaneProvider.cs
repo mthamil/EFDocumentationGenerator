@@ -13,9 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-using System;
 using System.ComponentModel.Composition;
-using System.Linq;
 using DocumentationGenerator.Utilities;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
@@ -26,43 +24,18 @@ namespace DocumentationGenerator.Diagnostics
 	/// Provides the <see cref="OutputWindowPane"/> used for documentation generation.
 	/// </summary>
 	[Export(typeof(IOutputPaneProvider))]
-	public class DocGeneratorOutputPaneProvider : IOutputPaneProvider
+	public class DocGeneratorOutputPaneProvider : OutputPaneProvider
 	{
 		/// <summary>
 		/// Initializes a new <see cref="DocGeneratorOutputPaneProvider"/>.
 		/// </summary>
 		[ImportingConstructor]
 		public DocGeneratorOutputPaneProvider()
-			: this(ServiceProvider.GlobalProvider.GetService<DTE>())	// This is done instead of using: [Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider
+			: base(ServiceProvider.GlobalProvider.GetService<DTE>())	// This is done instead of using: [Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider
 																		// because of the following bug: http://entityframework.codeplex.com/workitem/672
 		{
+			PaneName = EntityDesignerPaneName;
 		}
-
-		/// <summary>
-		/// Initializes a new <see cref="DocGeneratorOutputPaneProvider"/>.
-		/// </summary>
-		/// <param name="application">The applicaiton object</param>
-		public DocGeneratorOutputPaneProvider(DTE application)
-		{
-			_application = application;
-		}
-
-		/// <see cref="IOutputPaneProvider.Get"/>
-		public OutputWindowPane Get()
-		{
-			var window = _application.Windows.Item(EnvDTEConstants.vsWindowKindOutput);
-			var outputWindow = (OutputWindow)window.Object;
-
-			var outputPane = outputWindow.OutputWindowPanes
-			                             .Cast<OutputWindowPane>()
-			                             .FirstOrDefault(pane =>
-			                                             pane.Name.Equals(EntityDesignerPaneName, StringComparison.CurrentCultureIgnoreCase))
-			                 ?? outputWindow.OutputWindowPanes.Add(EntityDesignerPaneName);
-
-			return outputPane;
-		}
-
-		private readonly DTE _application;
 
 		private const string EntityDesignerPaneName = "Entity Documentation Generator";
 	}

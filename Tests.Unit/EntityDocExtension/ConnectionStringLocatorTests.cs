@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using DocumentationGenerator;
 using EnvDTE;
 using Moq;
@@ -38,13 +39,9 @@ namespace Tests.Unit.EntityDocExtension
 			using (var tempConfigFile = new TemporaryFile(validAppConfigXml))
 			{
 				// Arrange.
-				var appConfigItem = new Mock<ProjectItem> { DefaultValue = DefaultValue.Mock };
-				appConfigItem.SetupGet(pi => pi.ProjectItems)
-							 .Returns(new Mock<ProjectItems> { DefaultValue = DefaultValue.Mock }.Object);
+				project.SetupGet(pi => pi.Saved).Returns(true);
 
-				appConfigItem.SetupGet(pi => pi.Name).Returns("App.config");
-				appConfigItem.Setup(pi => pi.get_FileNames(0)).Returns(tempConfigFile.File.FullName);
-
+				var appConfigItem = CreateAppConfig(tempConfigFile.File);
 				projectItems.Add(appConfigItem.Object);
 
 				// Act.
@@ -55,6 +52,45 @@ namespace Tests.Unit.EntityDocExtension
 				Assert.Equal("Test", connectionString.InitialCatalog);
 				Assert.True(connectionString.IntegratedSecurity);
 				Assert.True(connectionString.MultipleActiveResultSets);
+				appConfigItem.Verify(pi => pi.Save(It.IsAny<string>()), Times.Never());
+				project.Verify(p => p.Save(It.IsAny<string>()), Times.Never());
+			}
+		}
+
+		[Fact]
+		public void Test_Unsaved_Project()
+		{
+			using (var tempConfigFile = new TemporaryFile(validAppConfigXml))
+			{
+				// Arrange.
+				project.SetupGet(pi => pi.Saved).Returns(false);
+
+				var appConfigItem = CreateAppConfig(tempConfigFile.File);
+				projectItems.Add(appConfigItem.Object);
+
+				// Act.
+				locator.Locate(project.Object);
+
+				// Assert.
+				project.Verify(p => p.Save(""), Times.Once());
+			}
+		}
+
+		[Fact]
+		public void Test_Unsaved_AppConfig()
+		{
+			using (var tempConfigFile = new TemporaryFile(validAppConfigXml))
+			{
+				// Arrange.
+				var appConfigItem = CreateAppConfig(tempConfigFile.File, true);
+
+				projectItems.Add(appConfigItem.Object);
+
+				// Act.
+				locator.Locate(project.Object);
+
+				// Assert.
+				appConfigItem.Verify(pi => pi.Save(""), Times.Once());
 			}
 		}
 
@@ -75,14 +111,7 @@ namespace Tests.Unit.EntityDocExtension
 												</configuration>"))
 			{
 				// Arrange.
-				var appConfigItem = new Mock<ProjectItem> { DefaultValue = DefaultValue.Mock };
-				appConfigItem.SetupGet(pi => pi.ProjectItems)
-				             .Returns(new Mock<ProjectItems>  {  DefaultValue = DefaultValue.Mock }.Object);
-
-				appConfigItem.SetupGet(pi => pi.Name).Returns("App.config");
-				appConfigItem.Setup(pi => pi.get_FileNames(0)).Returns(tempConfigFile.File.FullName);
-
-				projectItems.Add(appConfigItem.Object);
+				projectItems.Add(CreateAppConfig(tempConfigFile.File).Object);
 
 				// Act/Assert.
 				Assert.Throws<ConnectionStringLocationException>(() =>
@@ -100,19 +129,24 @@ namespace Tests.Unit.EntityDocExtension
 												</configuration>"))
 			{
 				// Arrange.
-				var appConfigItem = new Mock<ProjectItem> { DefaultValue = DefaultValue.Mock };
-				appConfigItem.SetupGet(pi => pi.ProjectItems)
-							 .Returns(new Mock<ProjectItems> { DefaultValue = DefaultValue.Mock }.Object);
-
-				appConfigItem.SetupGet(pi => pi.Name).Returns("App.config");
-				appConfigItem.Setup(pi => pi.get_FileNames(0)).Returns(tempConfigFile.File.FullName);
-
-				projectItems.Add(appConfigItem.Object);
+				projectItems.Add(CreateAppConfig(tempConfigFile.File).Object);
 
 				// Act/Assert.
 				Assert.Throws<ConnectionStringLocationException>(() =>
 					locator.Locate(project.Object));
 			}
+		}
+
+		private Mock<ProjectItem> CreateAppConfig(FileInfo configFile, bool hasChanges = false)
+		{
+			var appConfigItem = new Mock<ProjectItem> { DefaultValue = DefaultValue.Mock };
+			appConfigItem.SetupGet(pi => pi.ProjectItems)
+						 .Returns(new Mock<ProjectItems> { DefaultValue = DefaultValue.Mock }.Object);
+
+			appConfigItem.SetupGet(pi => pi.Name).Returns("App.config");
+			appConfigItem.Setup(pi => pi.get_FileNames(0)).Returns(configFile.FullName);
+			appConfigItem.SetupGet(pi => pi.Saved).Returns(!hasChanges);
+			return appConfigItem;
 		}
 
 		private readonly ConnectionStringLocator locator = new ConnectionStringLocator();
