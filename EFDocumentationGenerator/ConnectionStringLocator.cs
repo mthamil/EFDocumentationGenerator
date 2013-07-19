@@ -32,27 +32,37 @@ namespace DocumentationGenerator
 		/// <param name="project">The project to search for a connection string</param>
 		public SqlConnectionStringBuilder Locate(Project project)
 		{
+			// Try to find the app config file.
 			var appConfigItem = project.ProjectItems
 				.Cast<ProjectItem>()
 				.Where(item => item.ProjectItems == null || item.ProjectItems.Count == 0)
-				.SingleOrDefault(item => string.Equals(item.Name, ConfigName, StringComparison.InvariantCultureIgnoreCase));
+				.SingleOrDefault(item => IgnoreCaseEquals(item.Name, ConfigName));
 
 			if (appConfigItem == null)
 				throw new ConnectionStringLocationException(String.Format("{0} file does not exist", ConfigName));
 
+			// Try to find the connection strings section.
 			var appConfigFileName = appConfigItem.FileNames[0];
 			var appConfig = XDocument.Load(appConfigFileName);
 			var connectionStringsElement = appConfig
 				.Elements(XName.Get("configuration")).Single()
-				.Elements(XName.Get("connectionStrings"));
+				.Elements(XName.Get("connectionStrings")).ToList();
 
 			if (!connectionStringsElement.Any())
 				throw new ConnectionStringLocationException(String.Format("No valid connection strings found in {0} file", ConfigName));
 
-			var entityConnString = connectionStringsElement
+			// Try to find the Entity Framework connection string.
+			var entityConnElement = connectionStringsElement
 				.Elements(XName.Get("add"))
-				.First(element => element.Attribute("providerName").Value == "System.Data.EntityClient")
-				.Attribute("connectionString").Value;
+				.FirstOrDefault(element =>
+					element.Attribute("providerName") != null &&
+					IgnoreCaseEquals(element.Attribute("providerName").Value, EntityProviderName));
+
+			if (entityConnElement == null)
+				throw new ConnectionStringLocationException(String.Format("{0} provider not found.", EntityProviderName));
+
+			// Parse the connection string.
+			string entityConnString = entityConnElement.Attribute("connectionString").Value;
 
 			var innerConnStringStart = entityConnString.ToLower().IndexOf("data source=");
 			var innerConnStringEnd = entityConnString.ToLower().LastIndexOf('"');
@@ -63,6 +73,12 @@ namespace DocumentationGenerator
 			return new SqlConnectionStringBuilder(connectionString);
 		}
 
+		private static bool IgnoreCaseEquals(string first, string second)
+		{
+			return String.Equals(first, second, StringComparison.InvariantCultureIgnoreCase);
+		}
+
 		private const string ConfigName = "App.config";
+		private const string EntityProviderName = "System.Data.EntityClient";
 	}
 }

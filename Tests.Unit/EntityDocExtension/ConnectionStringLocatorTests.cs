@@ -67,7 +67,7 @@ namespace Tests.Unit.EntityDocExtension
 		}
 
 		[Fact]
-		public void Test_Locate_No_ConnectionString_In_Config_File()
+		public void Test_Locate_No_ConnectionStrings_In_Config_File()
 		{
 			using (var tempConfigFile = new TemporaryFile(
 												@"<?xml version='1.0' encoding='utf-8'?>
@@ -78,6 +78,31 @@ namespace Tests.Unit.EntityDocExtension
 				var appConfigItem = new Mock<ProjectItem> { DefaultValue = DefaultValue.Mock };
 				appConfigItem.SetupGet(pi => pi.ProjectItems)
 				             .Returns(new Mock<ProjectItems>  {  DefaultValue = DefaultValue.Mock }.Object);
+
+				appConfigItem.SetupGet(pi => pi.Name).Returns("App.config");
+				appConfigItem.Setup(pi => pi.get_FileNames(0)).Returns(tempConfigFile.File.FullName);
+
+				projectItems.Add(appConfigItem.Object);
+
+				// Act/Assert.
+				Assert.Throws<ConnectionStringLocationException>(() =>
+					locator.Locate(project.Object));
+			}
+		}
+
+		[Fact]
+		public void Test_Locate_No_EntityFramework_ConnectionString_In_Config_File()
+		{
+			using (var tempConfigFile = new TemporaryFile(
+												@"<?xml version='1.0' encoding='utf-8'?>
+												<configuration>
+													<connectionStrings><add name='TestEntities' connectionString='conn_string'/></connectionStrings>
+												</configuration>"))
+			{
+				// Arrange.
+				var appConfigItem = new Mock<ProjectItem> { DefaultValue = DefaultValue.Mock };
+				appConfigItem.SetupGet(pi => pi.ProjectItems)
+							 .Returns(new Mock<ProjectItems> { DefaultValue = DefaultValue.Mock }.Object);
 
 				appConfigItem.SetupGet(pi => pi.Name).Returns("App.config");
 				appConfigItem.Setup(pi => pi.get_FileNames(0)).Returns(tempConfigFile.File.FullName);
