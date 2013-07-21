@@ -13,6 +13,8 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
+using System;
+using System.Linq;
 using System.Runtime.Versioning;
 using EnvDTE;
 
@@ -42,6 +44,21 @@ namespace DocumentationGenerator.Utilities
 				// Nothing to do.
 			}
 			return isEFv2Model;
+		}
+
+		/// <summary>
+		/// Attempts to find an immediate child <see cref="ProjectItem"/> of a <see cref="Project"/>
+		/// that matches the given condition.
+		/// </summary>
+		/// <param name="project">The parent project to search</param>
+		/// <param name="predicate">The condition that must be matched</param>
+		/// <returns>The matching item or null</returns>
+		public static ProjectItem TryFindChild(this Project project, Predicate<ProjectItem> predicate)
+		{
+			return project.ProjectItems
+			              .Cast<ProjectItem>()
+			              .Where(item => item.ProjectItems == null || item.ProjectItems.Count == 0)
+			              .SingleOrDefault(item => predicate(item));
 		}
 	}
 }

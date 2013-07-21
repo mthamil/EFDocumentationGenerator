@@ -18,6 +18,7 @@ using System.ComponentModel.Composition;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Xml.Linq;
+using DocumentationGenerator.Utilities;
 using EnvDTE;
 
 namespace DocumentationGenerator
@@ -34,17 +35,8 @@ namespace DocumentationGenerator
 		/// <param name="project">The project to search for a connection string</param>
 		public SqlConnectionStringBuilder Locate(Project project)
 		{
-			// If there was no existing app.config file, check to see if the project had changes.
-			// If so, save the project and then check for the app.config.
-			if (!project.Saved)
-				project.Save();
-
 			// Try to find the app config file.
-			var appConfigItem = project.ProjectItems
-				.Cast<ProjectItem>()
-				.Where(item => item.ProjectItems == null || item.ProjectItems.Count == 0)
-				.SingleOrDefault(item => IgnoreCaseEquals(item.Name, ConfigName));
-
+			var appConfigItem = project.TryFindChild(item => IgnoreCaseEquals(item.Name, ConfigName));
 			if (appConfigItem == null)
 				throw new ConnectionStringLocationException(String.Format("{0} file does not exist", ConfigName));
 
@@ -52,6 +44,18 @@ namespace DocumentationGenerator
 			if (!appConfigItem.Saved)
 				appConfigItem.Save();
 
+			// Try to find the connection string.
+			string entityConnString = TryGetConnectionString(appConfigItem);
+			var connectionString = ParseInnerConnectionString(entityConnString);
+
+			return new SqlConnectionStringBuilder(connectionString);
+		}
+
+		/// <summary>
+		/// Searches a config file for an Entity Framework connection string.
+		/// </summary>
+		private string TryGetConnectionString(ProjectItem appConfigItem)
+		{
 			// Try to find the connection strings section.
 			var appConfigFileName = appConfigItem.FileNames[0];
 			var appConfig = XDocument.Load(appConfigFileName);
@@ -73,15 +77,21 @@ namespace DocumentationGenerator
 				throw new ConnectionStringLocationException(String.Format("Connection string for provider '{0}' not found.", EntityProviderName));
 
 			// Parse the connection string.
-			string entityConnString = entityConnElement.Attribute("connectionString").Value;
+			return entityConnElement.Attribute("connectionString").Value;
+		}
 
+		/// <summary>
+		/// Parses an Entity Framework connection string to extract the inner database connection string.
+		/// </summary>
+		private string ParseInnerConnectionString(string entityConnString)
+		{
 			var innerConnStringStart = entityConnString.ToLower().IndexOf("data source=");
 			var innerConnStringEnd = entityConnString.ToLower().LastIndexOf('"');
 			var connectionString = entityConnString.Substring
-				(innerConnStringStart, 
+				(innerConnStringStart,
 				(entityConnString.Length - innerConnStringStart) - (entityConnString.Length - innerConnStringEnd)).Trim();
 
-			return new SqlConnectionStringBuilder(connectionString);
+			return connectionString;
 		}
 
 		private static bool IgnoreCaseEquals(string first, string second)

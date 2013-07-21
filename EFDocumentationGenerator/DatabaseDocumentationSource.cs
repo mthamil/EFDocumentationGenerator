@@ -29,8 +29,18 @@ namespace DocumentationGenerator
 		/// </summary>
 		/// <param name="connectionString">The database connection string</param>
 		public DatabaseDocumentationSource(string connectionString)
+			: this(connectionString, cs => new SqlConnection(cs))
 		{
-			_connection = ConnectionFactory(connectionString);
+		}
+
+		/// <summary>
+		/// Initializes a new <see cref="DatabaseDocumentationSource"/>.
+		/// </summary>
+		/// <param name="connectionString">The database connection string</param>
+		/// <param name="connectionFactory">Creates database connections from a connection string</param>
+		public DatabaseDocumentationSource(string connectionString, Func<string, IDbConnection> connectionFactory)
+		{
+			_connection = connectionFactory(connectionString);
 			_connection.Open();
 		}
 
@@ -70,10 +80,5 @@ namespace DocumentationGenerator
 		}
 
 		private readonly IDbConnection _connection;
-
-		/// <summary>
-		/// Creates database connections with a given connection string.
-		/// </summary>
-		internal static Func<string, IDbConnection> ConnectionFactory = cs => new SqlConnection(cs);
 	}
 }

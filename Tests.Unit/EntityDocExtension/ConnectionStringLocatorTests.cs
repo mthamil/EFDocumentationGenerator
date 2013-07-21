@@ -58,25 +58,6 @@ namespace Tests.Unit.EntityDocExtension
 		}
 
 		[Fact]
-		public void Test_Unsaved_Project()
-		{
-			using (var tempConfigFile = new TemporaryFile(validAppConfigXml))
-			{
-				// Arrange.
-				project.SetupGet(pi => pi.Saved).Returns(false);
-
-				var appConfigItem = CreateAppConfig(tempConfigFile.File);
-				projectItems.Add(appConfigItem.Object);
-
-				// Act.
-				locator.Locate(project.Object);
-
-				// Assert.
-				project.Verify(p => p.Save(""), Times.Once());
-			}
-		}
-
-		[Fact]
 		public void Test_Unsaved_AppConfig()
 		{
 			using (var tempConfigFile = new TemporaryFile(validAppConfigXml))
