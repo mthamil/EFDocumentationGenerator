@@ -14,12 +14,15 @@
 //  limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Xml.Linq;
 using DocumentationGenerator.Diagnostics;
 using DocumentationGenerator.Utilities;
 using EnvDTE;
+using EnvDTE80;
 using Microsoft.Data.Entity.Design.Extensibility;
 
 namespace DocumentationGenerator
@@ -34,13 +37,40 @@ namespace DocumentationGenerator
 		/// <summary>
 		/// Initializes a new <see cref="ModelGenerationExtension"/>.
 		/// </summary>
-		/// <param name="connectionStringLocator">Used for retrieving a connection string</param>
 		/// <param name="logger">Used for logging informational messages</param>
+		/// <param name="connectionStringLocator">Used for retrieving a connection string</param>
+		/// <param name="errorList">A read-only view of the Error List</param>
 		[ImportingConstructor]
-		public ModelGenerationExtension(IConnectionStringLocator connectionStringLocator, ILogger logger)
+		public ModelGenerationExtension(ILogger logger, IConnectionStringLocator connectionStringLocator, IReadOnlyList<ErrorItem> errorList)
+			: this(
+				logger,
+				connectionStringLocator,
+				connectionString => new DatabaseDocumentationSource(connectionString),
+				source => new ModelDocumentationUpdater(source), 
+				errorList)
 		{
-			_connectionStringLocator = connectionStringLocator;
+		}
+
+		/// <summary>
+		/// Initializes a new <see cref="ModelGenerationExtension"/>.
+		/// </summary>
+		/// <param name="logger">Used for logging informational messages</param>
+		/// <param name="connectionStringLocator">Used for retrieving a connection string</param>
+		/// <param name="documentationSourceFactory">Creates <see cref="IDocumentationSource"/> objects</param>
+		/// <param name="modelUpdaterFactory">Creates objects that populate an EDMX model's documentation nodes</param>
+		/// <param name="errorList">A read-only view of the Error List</param>
+		public ModelGenerationExtension(
+			ILogger logger, 
+			IConnectionStringLocator connectionStringLocator, 
+			Func<string, IDocumentationSource> documentationSourceFactory,
+			Func<IDocumentationSource, IModelDocumentationUpdater> modelUpdaterFactory,
+			IReadOnlyList<ErrorItem> errorList)
+		{
 			_logger = logger;
+			_connectionStringLocator = connectionStringLocator;
+			_documentationSourceFactory = documentationSourceFactory;
+			_modelUpdaterFactory = modelUpdaterFactory;
+			_errorList = errorList;
 		}
 
 		/// <summary>
@@ -59,6 +89,12 @@ namespace DocumentationGenerator
 		/// </param>
 		public void OnAfterModelGenerated(ModelGenerationExtensionContext context)
 		{
+			// Capture any model errors that were NOT created by this extension.
+			_edmxErrors = _errorList.Where(error =>
+			                        error.FileName.EndsWith(".edmx") &&
+			                        error.Description.StartsWith("Error") &&
+			                        error.Project == context.Project.UniqueName).ToList();
+
 			// When in Update mode, both methods will be called and only one of them needs to execute.
 			if (context.WizardKind == WizardKind.Generate)
 				UpdateModel(context.Project, context.CurrentDocument, context.WizardKind);
@@ -92,6 +128,13 @@ namespace DocumentationGenerator
 		/// </param>
 		public void OnAfterModelUpdated(UpdateModelExtensionContext context)
 		{
+			// Prevent update if model errors existed, particularly to avoid this extension getting blamed for them.
+			if (_edmxErrors.Count > 0)
+			{
+				_logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: Model contains errors. Documentation will not be updated.", DateTime.Now);
+				return;
+			}
+
 			UpdateModel(context.Project, context.CurrentDocument, context.WizardKind);
 		}
 
@@ -101,7 +144,7 @@ namespace DocumentationGenerator
 			if (!isEFv2Model)
 				return;
 
-			_logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: ------------ Starting documentation generation ------------", DateTime.Now);
+			_logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: ------------ Starting documentation generation for project: {1} ------------", DateTime.Now, project.Name);
 
 			// Attempt to find the database connection string.
 			SqlConnectionStringBuilder connectionString;
@@ -119,15 +162,20 @@ namespace DocumentationGenerator
 				return;
 			}
 
-			using (var docSource = new DatabaseDocumentationSource(connectionString.ToString()))
+			using (var docSource = _documentationSourceFactory(connectionString.ToString()))
 			{
-				new DocumentationUpdater(docSource).UpdateDocumentation(currentDocument);
+				_modelUpdaterFactory(docSource).UpdateDocumentation(currentDocument);
 			}
 
 			_logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: Documentation generation succeeded", DateTime.Now);
 		}
 
+		private ICollection<ErrorItem> _edmxErrors; 
+
 		private readonly IConnectionStringLocator _connectionStringLocator;
+		private readonly Func<string, IDocumentationSource> _documentationSourceFactory;
+		private readonly Func<IDocumentationSource, IModelDocumentationUpdater> _modelUpdaterFactory;
+		private readonly IReadOnlyList<ErrorItem> _errorList;
 		private readonly ILogger _logger;
 	}
 }

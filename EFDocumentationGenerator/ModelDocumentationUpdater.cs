@@ -23,13 +23,13 @@ namespace DocumentationGenerator
 	/// <summary>
 	/// Updates XML EDMX file documentation nodes.
 	/// </summary>
-	public class DocumentationUpdater
+	internal class ModelDocumentationUpdater : IModelDocumentationUpdater
 	{
 		/// <summary>
-		/// Initializes a new <see cref="DocumentationUpdater"/>.
+		/// Initializes a new <see cref="ModelDocumentationUpdater"/>.
 		/// </summary>
 		/// <param name="documentationSource">The documentation source</param>
-		public DocumentationUpdater(IDocumentationSource documentationSource)
+		public ModelDocumentationUpdater(IDocumentationSource documentationSource)
 		{
 			_documentationSource = documentationSource;
 		}
@@ -60,14 +60,16 @@ namespace DocumentationGenerator
 
 		private void UpdateNodeDocumentation(XElement element, string documentation)
 		{
-			if (String.IsNullOrEmpty(documentation))
+			if (String.IsNullOrWhiteSpace(documentation))
 				return;
+
+			var fixedDocumentation = documentation.Trim();
 
 			// Remove existing documentation.
 			element.Edm().Descendants("Documentation").Remove();
 
 			element.AddFirst(new XElement(XName.Get("Documentation", Namespace),
-			                              new XElement(XName.Get("Summary", Namespace), documentation)));
+										  new XElement(XName.Get("Summary", Namespace), fixedDocumentation)));
 		}
 
 		private readonly IDocumentationSource _documentationSource;

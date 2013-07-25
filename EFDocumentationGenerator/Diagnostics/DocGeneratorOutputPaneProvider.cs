@@ -13,10 +13,10 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
+using System;
 using System.ComponentModel.Composition;
 using DocumentationGenerator.Utilities;
 using EnvDTE;
-using Microsoft.VisualStudio.Shell;
 
 namespace DocumentationGenerator.Diagnostics
 {
@@ -30,9 +30,8 @@ namespace DocumentationGenerator.Diagnostics
 		/// Initializes a new <see cref="DocGeneratorOutputPaneProvider"/>.
 		/// </summary>
 		[ImportingConstructor]
-		public DocGeneratorOutputPaneProvider()
-			: base(ServiceProvider.GlobalProvider.GetService<DTE>())	// This is done instead of using: [Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider
-																		// because of the following bug: http://entityframework.codeplex.com/workitem/672
+		public DocGeneratorOutputPaneProvider(IServiceProvider serviceProvider)
+			: base(serviceProvider.GetService<DTE>())
 		{
 			PaneName = EntityDesignerPaneName;
 		}

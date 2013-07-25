@@ -70,6 +70,11 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>C:\Program Files (x86)\Common Files\microsoft shared\MSEnv\PublicAssemblies\envdte.dll</HintPath>
     </Reference>
+    <Reference Include="envdte80, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>C:\Program Files (x86)\Common Files\microsoft shared\MSEnv\PublicAssemblies\envdte80.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.VisualStudio.Shell.11.0, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Data.Entity.Design.Extensibility, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -101,14 +106,17 @@
     <Compile Include="Diagnostics\OutputPaneProvider.cs" />
     <Compile Include="Diagnostics\OutputWindowLogger.cs" />
     <Compile Include="EnvDTEConstants.cs" />
+    <Compile Include="ErrorListAdapter.cs" />
     <Compile Include="IConnectionStringLocator.cs" />
+    <Compile Include="IModelDocumentationUpdater.cs" />
     <Compile Include="Properties\AssemblyInfo.Versions.cs" />
     <Compile Include="ConnectionStringLocator.cs" />
     <Compile Include="DatabaseDocumentationSource.cs" />
-    <Compile Include="DocumentationUpdater.cs" />
+    <Compile Include="ModelDocumentationUpdater.cs" />
     <Compile Include="IDocumentationSource.cs" />
     <Compile Include="ModelGenerationExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="GlobalServiceProvider.cs" />
     <Compile Include="Utilities\ProjectExtensions.cs" />
     <Compile Include="Utilities\ServiceProviderExtensions.cs" />
     <Compile Include="Utilities\XContainerExtensions.cs" />

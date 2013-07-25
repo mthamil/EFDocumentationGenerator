@@ -32,18 +32,25 @@ namespace DocumentationGenerator.Utilities
 		/// </summary>
 		public static bool IsEntityFrameworkV2Model(this Project project)
 		{
-			bool isEFv2Model = false;
 			try
 			{
-				var targetFrameworkMoniker = project.Properties.Item("TargetFrameworkMoniker");
-				var frameworkName = new FrameworkName(targetFrameworkMoniker.Value.ToString());
-				isEFv2Model = (frameworkName.Version.Major == 4);
+				return project.Framework().Version.Major == 4;
 			}
 			catch
 			{
 				// Nothing to do.
+				return false;
 			}
-			return isEFv2Model;
+		}
+
+		/// <summary>
+		/// Returns the .NET framework version a project targets.
+		/// </summary>
+		public static FrameworkName Framework(this Project project)
+		{
+			var targetFrameworkMoniker = project.Properties.Item("TargetFrameworkMoniker");
+			var frameworkName = new FrameworkName(targetFrameworkMoniker.Value.ToString());
+			return frameworkName;
 		}
 
 		/// <summary>

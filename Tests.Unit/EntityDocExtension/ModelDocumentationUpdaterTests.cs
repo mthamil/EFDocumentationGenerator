@@ -10,15 +10,15 @@ using Xunit;
 
 namespace Tests.Unit.EntityDocExtension
 {
-	public class DocumentationUpdaterTests
+	public class ModelDocumentationUpdaterTests
 	{
-		public DocumentationUpdaterTests()
+		public ModelDocumentationUpdaterTests()
 		{
 			docSource.Setup(s => s.GetDocumentation(It.IsAny<string>(), It.IsAny<string>()))
 			         .Returns((string entityName, string propName) => 
 						 documentation[Tuple.Create(entityName, propName)]);
 
-			updater = new DocumentationUpdater(docSource.Object);
+			updater = new ModelDocumentationUpdater(docSource.Object);
 		}
 
 		[Fact]
@@ -59,7 +59,7 @@ namespace Tests.Unit.EntityDocExtension
 			return element.Edm().Element("Documentation").Edm().Element("Summary").Value;
 		}
 
-		private readonly DocumentationUpdater updater;
+		private readonly ModelDocumentationUpdater updater;
 
 		private IDictionary<Tuple<string, string>, string> documentation;
 

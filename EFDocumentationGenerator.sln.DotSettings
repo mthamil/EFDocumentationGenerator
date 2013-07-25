@@ -1,0 +1,23 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=580F6BB6A32FCF409B69E853C4C55212/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=580F6BB6A32FCF409B69E853C4C55212/Shortcut/@EntryValue">ut</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=580F6BB6A32FCF409B69E853C4C55212/Description/@EntryValue">Creates a new xUnit test method.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=580F6BB6A32FCF409B69E853C4C55212/Text/@EntryValue">[Fact]&#xD;
+public void Test_$METHOD_NAME$()&#xD;
+{&#xD;
+    // Arrange.&#xD;
+    $END$&#xD;
+&#xD;
+    // Act.&#xD;
+&#xD;
+&#xD;
+    // Assert.&#xD;
+&#xD;
+}</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=580F6BB6A32FCF409B69E853C4C55212/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=580F6BB6A32FCF409B69E853C4C55212/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=580F6BB6A32FCF409B69E853C4C55212/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=580F6BB6A32FCF409B69E853C4C55212/Scope/=139FF4CE89E7094686FDA7BF5FFBBE92/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=580F6BB6A32FCF409B69E853C4C55212/Scope/=139FF4CE89E7094686FDA7BF5FFBBE92/Type/@EntryValue">Everywhere</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=580F6BB6A32FCF409B69E853C4C55212/Field/=METHOD_005FNAME/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=580F6BB6A32FCF409B69E853C4C55212/Field/=METHOD_005FNAME/Order/@EntryValue">0</s:Int64></wpf:ResourceDictionary>

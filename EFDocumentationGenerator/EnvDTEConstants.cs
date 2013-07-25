@@ -24,5 +24,10 @@ namespace DocumentationGenerator
 		/// The Output window.
 		/// </summary>
 		public const string vsWindowKindOutput = "{34E76E81-EE4A-11D0-AE2E-00A0C90FFFC3}";
+
+		/// <summary>
+		/// An ErrorList window.
+		/// </summary>
+		public const string vsWindowKindErrorList = "{D78612C7-9962-4B83-95D9-268046DAD23A}";
 	}
 }

@@ -14,20 +14,22 @@
 //  limitations under the License.
 
 using System;
+using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Shell;
 
 namespace DocumentationGenerator
 {
 	/// <summary>
-	/// Represents a source of entity documentation.
+	/// A service provider implementation that wraps the global provider to make up for the following 
+	/// bug: http://entityframework.codeplex.com/workitem/672
 	/// </summary>
-	public interface IDocumentationSource : IDisposable
+	[Export(typeof(IServiceProvider))]
+	public class GlobalServiceProvider : IServiceProvider
 	{
-		/// <summary>
-		/// Retrieves documentation for an entity or entity property.
-		/// </summary>
-		/// <param name="entityName">An entity name</param>
-		/// <param name="propertyName">An optional entity property name</param>
-		/// <returns>A documentation string</returns>
-		string GetDocumentation(string entityName, string propertyName = null);
+		/// <see cref="IServiceProvider.GetService"/>
+		public object GetService(Type serviceType)
+		{
+			return ServiceProvider.GlobalProvider.GetService(serviceType);
+		}
 	}
 }

@@ -22,7 +22,7 @@ namespace DocumentationGenerator
 	/// <summary>
 	/// An entity documentation source that pulls documentation from a SQL Server database.
 	/// </summary>
-	public class DatabaseDocumentationSource : IDocumentationSource, IDisposable
+	internal class DatabaseDocumentationSource : IDocumentationSource
 	{
 		/// <summary>
 		/// Initializes a new <see cref="DatabaseDocumentationSource"/>.
