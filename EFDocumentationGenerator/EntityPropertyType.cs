@@ -13,21 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-using System;
-
 namespace DocumentationGenerator
 {
 	/// <summary>
-	/// Represents a source of entity documentation.
+	/// The types of entity properties.
 	/// </summary>
-	public interface IDocumentationSource : IDisposable
+	public enum EntityPropertyType
 	{
 		/// <summary>
-		/// Retrieves documentation for an entity or entity property.
+		/// Indicates a regular property.
 		/// </summary>
-		/// <param name="entityName">An entity name</param>
-		/// <param name="property">An optional entity property</param>
-		/// <returns>A documentation string</returns>
-		string GetDocumentation(string entityName, EntityProperty property = null);
+		Property,
+
+		/// <summary>
+		/// Indicates a navigation property.
+		/// </summary>
+		NavigationProperty
 	}
 }

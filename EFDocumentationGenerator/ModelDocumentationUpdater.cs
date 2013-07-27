@@ -42,18 +42,35 @@ namespace DocumentationGenerator
 		/// <param name="modelDocument">An .edmx XML document to update</param>
 		public void UpdateDocumentation(XDocument modelDocument)
 		{
+			_namespace = modelDocument.Edm().Namespace;
+
 			var entityTypeElements = modelDocument.Edm().Descendants("EntityType").ToList();
 			foreach (var entityType in entityTypeElements)
 			{
 				string tableName = entityType.Attribute("Name").Value;
-				var propertyElements = entityType.Edm().Descendants("Property").ToList();
-
 				UpdateNodeDocumentation(entityType, _documentationSource.GetDocumentation(tableName));
 
-				foreach (var propertyElement in propertyElements)
+				var properties =
+						entityType.Edm().Descendants("Property")
+								  .Select(e => new
+								  {
+									  Element = e,
+									  Property = new EntityProperty(
+												   e.Attribute("Name").Value,
+												   EntityPropertyType.Property)
+								  })
+					.Concat(
+						entityType.Edm().Descendants("NavigationProperty")
+								  .Select(e => new
+								  {
+									  Element = e,
+									  Property = CreateNavProperty(e, modelDocument)
+								  }));
+
+				foreach (var property in properties)
 				{
-					string columnName = propertyElement.Attribute("Name").Value;
-					UpdateNodeDocumentation(propertyElement, _documentationSource.GetDocumentation(tableName, columnName));
+					UpdateNodeDocumentation(property.Element, 
+						_documentationSource.GetDocumentation(tableName, property.Property));
 				}
 			}
 		}
@@ -68,12 +85,24 @@ namespace DocumentationGenerator
 			// Remove existing documentation.
 			element.Edm().Descendants("Documentation").Remove();
 
-			element.AddFirst(new XElement(XName.Get("Documentation", Namespace),
-										  new XElement(XName.Get("Summary", Namespace), fixedDocumentation)));
+			element.AddFirst(new XElement(XName.Get("Documentation", _namespace),
+										  new XElement(XName.Get("Summary", _namespace), fixedDocumentation)));
 		}
 
-		private readonly IDocumentationSource _documentationSource;
+		private static EntityProperty CreateNavProperty(XElement element, XContainer document)
+		{
+			var relationship = element.Attribute("Relationship").Value;
+			var association = document.Edm()
+				.Descendants("AssociationSet")
+				.Single(ae => ae.Attribute("Association").Value == relationship);
 
-		private const string Namespace = "http://schemas.microsoft.com/ado/2009/11/edm";
+			return new EntityProperty(
+				association.Attribute("Name").Value,
+				EntityPropertyType.NavigationProperty);
+		}
+
+		private string _namespace;
+
+		private readonly IDocumentationSource _documentationSource;
 	}
 }

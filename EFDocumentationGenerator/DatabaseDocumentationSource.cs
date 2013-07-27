@@ -51,9 +51,9 @@ namespace DocumentationGenerator
 		}
 
 		/// <see cref="IDocumentationSource.GetDocumentation"/>
-		public string GetDocumentation(string entityName, string propertyName = null)
+		public string GetDocumentation(string entityName, EntityProperty property = null)
 		{
-			bool useColumn = propertyName != null;
+			bool useSecondLevel = property != null;
 
 			var query = String.Format(@"
 						SELECT [MSDescription].[value] FROM [sys].[schemas]
@@ -64,19 +64,24 @@ namespace DocumentationGenerator
 							 {0}, {1}) as MSDescription
 						WHERE [sys].[schemas].[name] <> 'sys' AND 
 							  [sys].[schemas].[name] NOT LIKE 'db\_%' ESCAPE '\'",
-					useColumn ? "'column'" : "null",
-					useColumn ? "@columnName" : "null");
+					useSecondLevel ? GetSecondLevelType(property.Type) : "null",
+					useSecondLevel ? "@secondLevelName" : "null");
 
 			using (var command = _connection.CreateCommand())
 			{
 				command.CommandText = query;
 				command.Parameters.Add(new SqlParameter("tableName", entityName));
 
-				if (useColumn)
-					command.Parameters.Add(new SqlParameter("columnName", propertyName));
+				if (useSecondLevel)
+					command.Parameters.Add(new SqlParameter("secondLevelName", property.Name));
 
 				return command.ExecuteScalar() as string;
 			}
+		}
+
+		private string GetSecondLevelType(EntityPropertyType propertyType)
+		{
+			return propertyType == EntityPropertyType.Property ? "'column'" : "'constraint'";
 		}
 
 		private readonly IDbConnection _connection;

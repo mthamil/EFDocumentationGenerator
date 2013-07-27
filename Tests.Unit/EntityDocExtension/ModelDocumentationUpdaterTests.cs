@@ -14,9 +14,9 @@ namespace Tests.Unit.EntityDocExtension
 	{
 		public ModelDocumentationUpdaterTests()
 		{
-			docSource.Setup(s => s.GetDocumentation(It.IsAny<string>(), It.IsAny<string>()))
-			         .Returns((string entityName, string propName) => 
-						 documentation[Tuple.Create(entityName, propName)]);
+			docSource.Setup(s => s.GetDocumentation(It.IsAny<string>(), It.IsAny<EntityProperty>()))
+			         .Returns((string entityName, EntityProperty property) => 
+						 documentation[Tuple.Create(entityName, property == null? null : property.Name)]);
 
 			updater = new ModelDocumentationUpdater(docSource.Object);
 		}
@@ -33,7 +33,8 @@ namespace Tests.Unit.EntityDocExtension
 				{ Tuple.Create("SecondTable", (string)null),     "SecondTable_Summary" },
 				{ Tuple.Create("SecondTable", "SecondTableID"),  "SecondTableID_Summary" },
 				{ Tuple.Create("SecondTable", "StringColumn"),   "StringColumn_Summary" },
-				{ Tuple.Create("SecondTable", "IntegerColumn"),  "IntegerColumn_Summary" }
+				{ Tuple.Create("SecondTable", "IntegerColumn"),  "IntegerColumn_Summary" },
+				{ Tuple.Create("SecondTable", "FK_FirstTable_Order_FirstTableID"),	 "ForeignKey_Summary" }
 			};
 
 			var edmxDocument = XDocument.Load(new StringReader(edmx));
@@ -52,6 +53,8 @@ namespace Tests.Unit.EntityDocExtension
 
 			Assert.Equal(new[] { "SecondTableID_Summary", "StringColumn_Summary", "IntegerColumn_Summary" },
 				entities.Last().Edm().Elements("Property").Select(GetSummary).ToArray());
+
+			Assert.Equal("ForeignKey_Summary", GetSummary(entities.Last().Edm().Element("NavigationProperty")));
 		}
 
 		private static string GetSummary(XElement element)
@@ -73,6 +76,7 @@ namespace Tests.Unit.EntityDocExtension
       <Schema Namespace='TestModel' xmlns:annotation='http://schemas.microsoft.com/ado/2009/02/edm/annotation' 
 									  xmlns:p1='http://schemas.microsoft.com/ado/2009/02/edm/annotation' 
 									  xmlns='http://schemas.microsoft.com/ado/2009/11/edm'>
+		<AssociationSet Name='FK_FirstTable_Order_FirstTableID' Association='TestModel.FK_FirstTable_Order_FirstTableID'/>
 		<EntityType Name='FirstTable'>
 			<Key>
 			<PropertyRef Name='FirstTableID' />
@@ -87,6 +91,7 @@ namespace Tests.Unit.EntityDocExtension
 			<Property Name='SecondTableID' Type='Int32' Nullable='false' p1:StoreGeneratedPattern='Identity'/>
 			<Property Name='StringColumn' Type='String' Nullable='false'/>
 			<Property Name='IntegerColumn' Type='Int32'/>
+			<NavigationProperty Name='FirstTable' Relationship='TestModel.FK_FirstTable_Order_FirstTableID'/>
 		</EntityType>
 	  </Schema>
 	</edmx:ConceptualModels>
