@@ -128,12 +128,9 @@ namespace DocumentationGenerator
 		/// </param>
 		public void OnAfterModelUpdated(UpdateModelExtensionContext context)
 		{
-			// Prevent update if model errors existed, particularly to avoid this extension getting blamed for them.
+			// Emit a warning if model errors already existed, particularly to avoid this extension getting blamed for them.
 			if (_edmxErrors.Count > 0)
-			{
-				_logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: Model contains errors. Documentation will not be updated.", DateTime.Now);
-				return;
-			}
+				_logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: Warning - Model contains errors prior to update. This plugin may erroneously be blamed for them.", DateTime.Now);
 
 			UpdateModel(context.Project, context.CurrentDocument, context.WizardKind);
 		}
@@ -144,7 +141,7 @@ namespace DocumentationGenerator
 			if (!isEFv2Model)
 				return;
 
-			_logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: ------------ Starting documentation generation for project: {1} ------------", DateTime.Now, project.Name);
+			_logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: ------------ Starting documentation generation for project: {1} ------------", DateTime.Now, project.UniqueName);
 
 			// Attempt to find the database connection string.
 			SqlConnectionStringBuilder connectionString;

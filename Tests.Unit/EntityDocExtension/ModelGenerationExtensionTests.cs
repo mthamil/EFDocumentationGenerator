@@ -59,7 +59,7 @@ namespace Tests.Unit.EntityDocExtension
 			modelUpdater.Verify(u => u.UpdateDocumentation(document), Times.Once());
 		}
 
-		[Fact]
+		[Fact(Skip="This behavior may not be desirable.")]
 		public void Test_Update_Prevented_By_Model_Errors()
 		{
 			// Arrange.
