@@ -132,7 +132,7 @@
   </PropertyGroup>
   <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
   <Target Name="BeforeBuild" Condition="'$(Configuration)' == 'Release'">
-    <Version Major="1" Minor="2" BuildType="Automatic" StartDate="7/6/2013" RevisionType="BuildIncrement">
+    <Version Major="1" Minor="3" BuildType="Automatic" StartDate="7/6/2013" RevisionType="BuildIncrement">
       <Output TaskParameter="Major" PropertyName="Major" />
       <Output TaskParameter="Minor" PropertyName="Minor" />
       <Output TaskParameter="Build" PropertyName="Build" />
