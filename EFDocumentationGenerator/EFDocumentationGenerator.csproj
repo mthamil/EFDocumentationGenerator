@@ -127,7 +127,6 @@
     <Compile Include="ErrorListAdapter.cs" />
     <Compile Include="IConnectionStringLocator.cs" />
     <Compile Include="IModelDocumentationUpdater.cs" />
-    <Compile Include="Properties\AssemblyInfo.Versions.cs" />
     <Compile Include="ConnectionStringLocator.cs" />
     <Compile Include="DatabaseDocumentationSource.cs" />
     <Compile Include="ModelDocumentationUpdater.cs" />
