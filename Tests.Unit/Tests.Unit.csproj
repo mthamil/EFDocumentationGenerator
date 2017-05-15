@@ -65,7 +65,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EntityDocExtension\ConnectionStringLocatorTests.cs" />
+    <Compile Include="EntityDocExtension\ConnectionStrings\ConnectionStringLocatorTests.cs" />
+    <Compile Include="EntityDocExtension\ConnectionStrings\InnerConnectionStringParserTests.cs" />
     <Compile Include="EntityDocExtension\DatabaseDocumentationSourceTests.cs" />
     <Compile Include="EntityDocExtension\Diagnostics\OutputPaneProviderTests.cs" />
     <Compile Include="EntityDocExtension\Diagnostics\OutputWindowLoggerTests.cs" />

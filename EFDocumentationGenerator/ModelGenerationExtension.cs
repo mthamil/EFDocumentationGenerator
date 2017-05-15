@@ -19,6 +19,7 @@ using System.ComponentModel.Composition;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Xml.Linq;
+using DocumentationGenerator.ConnectionStrings;
 using DocumentationGenerator.Diagnostics;
 using DocumentationGenerator.Utilities;
 using EnvDTE;

@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using DocumentationGenerator;
+using DocumentationGenerator.ConnectionStrings;
 using EnvDTE;
 using Moq;
 using Tests.Unit.Support;
 using Xunit;
 
-namespace Tests.Unit.EntityDocExtension
+namespace Tests.Unit.EntityDocExtension.ConnectionStrings
 {
 	public class ConnectionStringLocatorTests
 	{

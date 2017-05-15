@@ -1,4 +1,4 @@
-﻿//  Entity Designer Documentation Generator
+//  Entity Designer Documentation Generator
 //  Copyright 2013 Matthew Hamilton - matthamilton@live.com
 // 
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 using System.Data.SqlClient;
 using EnvDTE;
 
-namespace DocumentationGenerator
+namespace DocumentationGenerator.ConnectionStrings
 {
 	/// <summary>
 	/// Locates and extracts the connection string to use for model updates.

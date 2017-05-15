@@ -1,4 +1,4 @@
-﻿//  Entity Designer Documentation Generator
+//  Entity Designer Documentation Generator
 //  Copyright 2013 Matthew Hamilton - matthamilton@live.com
 // 
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace DocumentationGenerator
+namespace DocumentationGenerator.ConnectionStrings
 {
 	/// <summary>
 	/// Exception thrown when a connection string cannot be found.

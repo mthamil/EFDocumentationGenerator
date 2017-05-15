@@ -99,7 +99,10 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConnectionStringLocationException.cs" />
+    <Compile Include="ConnectionStrings\ConnectionStringLocationException.cs" />
+    <Compile Include="ConnectionStrings\ConnectionStringLocator.cs" />
+    <Compile Include="ConnectionStrings\IConnectionStringLocator.cs" />
+    <Compile Include="ConnectionStrings\InnerConnectionStringParser.cs" />
     <Compile Include="Diagnostics\DocGeneratorOutputPaneProvider.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
     <Compile Include="Diagnostics\IOutputPaneProvider.cs" />
@@ -109,10 +112,8 @@
     <Compile Include="EntityPropertyType.cs" />
     <Compile Include="EnvDTEConstants.cs" />
     <Compile Include="ErrorListAdapter.cs" />
-    <Compile Include="IConnectionStringLocator.cs" />
     <Compile Include="IModelDocumentationUpdater.cs" />
     <Compile Include="Properties\AssemblyInfo.Versions.cs" />
-    <Compile Include="ConnectionStringLocator.cs" />
     <Compile Include="DatabaseDocumentationSource.cs" />
     <Compile Include="ModelDocumentationUpdater.cs" />
     <Compile Include="IDocumentationSource.cs" />

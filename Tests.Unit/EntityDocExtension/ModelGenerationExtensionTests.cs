@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Xml.Linq;
 using DocumentationGenerator;
+using DocumentationGenerator.ConnectionStrings;
 using DocumentationGenerator.Diagnostics;
 using EnvDTE;
 using EnvDTE80;
