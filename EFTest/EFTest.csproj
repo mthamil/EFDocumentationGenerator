@@ -41,6 +41,8 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,12 +51,52 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EFTest.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EFTest.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EFTest.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EFTest.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EFTest.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EFTest.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Item.cs">
+      <DependentUpon>EFTest.tt</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EntityDeploy Include="EFTest.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>EFTest.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="EFTest.edmx.diagram">
+      <DependentUpon>EFTest.edmx</DependentUpon>
+    </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="EFTest.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>EFTest.edmx</DependentUpon>
+      <LastGenOutput>EFTest.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="EFTest.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>EFTest.edmx</DependentUpon>
+      <LastGenOutput>EFTest.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
