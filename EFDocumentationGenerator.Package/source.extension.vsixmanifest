@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="EFDocumentationGenerator.Package.649a8483-0780-4dd1-9cad-5792a1ad956e" Version="1.3" Language="en-US" Publisher="Matthew Hamilton" />
+    <Identity Id="EFDocumentationGenerator.Package.649a8483-0780-4dd1-9cad-5792a1ad956e" Version="1.4" Language="en-US" Publisher="Matthew Hamilton" />
     <DisplayName>Entity Designer Documentation Generator</DisplayName>
     <Description xml:space="preserve">An extension for the ADO.NET Entity Designer that populates documentation from the database.</Description>
     <MoreInfo>https://github.com/mthamil/EFDocumentationGenerator</MoreInfo>
