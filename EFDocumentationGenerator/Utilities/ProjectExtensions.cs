@@ -26,8 +26,8 @@ namespace DocumentationGenerator.Utilities
 	internal static class ProjectExtensions
 	{
 		/// <summary>
-		/// Returns true if the specified project targets .NET Framework 4.0; otherwise returns false.
-		/// .edmx files in projects that target .NET Framework 4.0 are EF v2 models. Projects that target 
+		/// Returns true if the specified project targets .NET Framework 4.0 or higher; otherwise returns false.
+		/// .edmx files in projects that target .NET Framework 4.0+ are EF v2 models. Projects that target 
 		/// .NET Framework 3.5 SP1 are EF v1 models.
 		/// </summary>
 		public static bool IsEntityFrameworkV2Model(this Project project)

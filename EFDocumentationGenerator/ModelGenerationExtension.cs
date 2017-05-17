@@ -137,14 +137,17 @@ namespace DocumentationGenerator
 
 		private void UpdateModel(Project project, XDocument currentDocument, WizardKind mode)
 		{
-			bool isEFv2Model = project.IsEntityFrameworkV2Model();
-			if (!isEFv2Model)
-				return;
+		    bool isEFv2Model = project.IsEntityFrameworkV2Model();
+		    if (!isEFv2Model)
+		    {
+		        _logger.Log("Could not generate documentation because the entity model targets an older framework.");
+		        return;
+		    }
 
-			_logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: ------------ Starting documentation generation for project: {1} ------------", DateTime.Now, project.UniqueName);
+		    _logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: ------ Starting documentation generation for project: {1} ------", DateTime.Now, project.UniqueName);
 
-			// Attempt to find the database connection string.
-			SqlConnectionStringBuilder connectionString;
+            // Attempt to find the database connection string.
+            SqlConnectionStringBuilder connectionString;
 			try
 			{
 				connectionString = _connectionStringLocator.Locate(project);
