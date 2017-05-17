@@ -1,5 +1,5 @@
 ﻿//  Entity Designer Documentation Generator
-//  Copyright 2013 Matthew Hamilton - matthamilton@live.com
+//  Copyright 2017 Matthew Hamilton - matthamilton@live.com
 // 
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ namespace DocumentationGenerator.Utilities
 	internal static class ProjectExtensions
 	{
 		/// <summary>
-		/// Returns true if the specified project targets .NET Framework 4.0; otherwise returns false.
-		/// .edmx files in projects that target .NET Framework 4.0 are EF v2 models. Projects that target 
+		/// Returns true if the specified project targets .NET Framework 4.0 or higher; otherwise returns false.
+		/// .edmx files in projects that target .NET Framework 4.0+ are EF v2 models. Projects that target 
 		/// .NET Framework 3.5 SP1 are EF v1 models.
 		/// </summary>
 		public static bool IsEntityFrameworkV2Model(this Project project)

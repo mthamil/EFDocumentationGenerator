@@ -1,5 +1,5 @@
 ﻿//  Entity Designer Documentation Generator
-//  Copyright 2013 Matthew Hamilton - matthamilton@live.com
+//  Copyright 2017 Matthew Hamilton - matthamilton@live.com
 // 
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("An extension to the ADO.NET Entity Designer that populates documentation from the database.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyProduct("Entity Designer Documentation Generator")]
-[assembly: AssemblyCopyright("Copyright © Matt Hamilton 2013")]
+[assembly: AssemblyCopyright("Copyright © Matt Hamilton 2017")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -35,6 +35,8 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("8767a5a5-e423-4c9d-8211-339aba567243")]
 
-[assembly: AssemblyInformationalVersion("1.3")]
+[assembly: AssemblyVersion("0.0.0.0")]
+[assembly: AssemblyFileVersion("0.0.0.0")]
+[assembly: AssemblyInformationalVersion("0.0")]
 
 [assembly: InternalsVisibleTo("Tests.Unit")]

@@ -3,3 +3,5 @@ _ReSharper.*
 *.suo
 */obj/*
 */bin/*
+.vs
+packages
