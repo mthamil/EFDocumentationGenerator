@@ -6,6 +6,8 @@
     <edmx:Diagrams>
       <Diagram DiagramId="809f968a288040bd826691dfd82ca2b7" Name="Diagram1">
         <EntityTypeShape EntityType="EFTestModels.Item" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="EFTestModels.Child" Width="1.5" PointX="3" PointY="0.875" />
+        <AssociationConnector Association="EFTestModels.FK_Child_Item" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

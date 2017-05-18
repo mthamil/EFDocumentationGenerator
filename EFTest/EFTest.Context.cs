@@ -26,5 +26,6 @@ namespace EFTest
         }
     
         public virtual DbSet<Item> Items { get; set; }
+        public virtual DbSet<Child> Children { get; set; }
     }
 }

@@ -51,6 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Child.cs">
+      <DependentUpon>EFTest.tt</DependentUpon>
+    </Compile>
     <Compile Include="EFTest.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

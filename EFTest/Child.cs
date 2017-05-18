@@ -12,20 +12,12 @@ namespace EFTest
     using System;
     using System.Collections.Generic;
     
-    public partial class Item
+    public partial class Child
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Item()
-        {
-            this.Children = new HashSet<Child>();
-        }
-    
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
-        public bool IsEnabled { get; set; }
+        public int ItemId { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Child> Children { get; set; }
+        public virtual Item Item { get; set; }
     }
 }
