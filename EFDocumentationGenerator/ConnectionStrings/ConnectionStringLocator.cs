@@ -1,4 +1,4 @@
-﻿//  Entity Designer Documentation Generator
+//  Entity Designer Documentation Generator
 //  Copyright 2017 Matthew Hamilton - matthamilton@live.com
 // 
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ using System.Xml.Linq;
 using DocumentationGenerator.Utilities;
 using EnvDTE;
 
-namespace DocumentationGenerator
+namespace DocumentationGenerator.ConnectionStrings
 {
 	/// <summary>
 	/// Locates and extracts the connection string to use for model updates.
@@ -46,7 +46,7 @@ namespace DocumentationGenerator
 
 			// Try to find the connection string.
 			string entityConnString = TryGetConnectionString(appConfigItem);
-			var connectionString = ParseInnerConnectionString(entityConnString);
+			var connectionString = _innerConnStringParser.Parse(entityConnString);
 
 			return new SqlConnectionStringBuilder(connectionString);
 		}
@@ -80,24 +80,12 @@ namespace DocumentationGenerator
 			return entityConnElement.Attribute("connectionString").Value;
 		}
 
-		/// <summary>
-		/// Parses an Entity Framework connection string to extract the inner database connection string.
-		/// </summary>
-		private string ParseInnerConnectionString(string entityConnString)
-		{
-			var innerConnStringStart = entityConnString.ToLower().IndexOf("data source=");
-			var innerConnStringEnd = entityConnString.ToLower().LastIndexOf('"');
-			var connectionString = entityConnString.Substring
-				(innerConnStringStart,
-				(entityConnString.Length - innerConnStringStart) - (entityConnString.Length - innerConnStringEnd)).Trim();
-
-			return connectionString;
-		}
-
 		private static bool IgnoreCaseEquals(string first, string second)
 		{
 			return String.Equals(first, second, StringComparison.InvariantCultureIgnoreCase);
 		}
+
+		private readonly InnerConnectionStringParser _innerConnStringParser = new InnerConnectionStringParser();
 
 		private const string ConfigName = "App.config";
 		private const string EntityProviderName = "System.Data.EntityClient";
