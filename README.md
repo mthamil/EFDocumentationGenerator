@@ -11,3 +11,5 @@ Framework connection string so that it can connect to the database.
 
 You can download the extension from the Visual Studio gallery: 
 http://visualstudiogallery.msdn.microsoft.com/0f78b512-3214-4845-a319-0c5fd0ebcf43
+
+[![Build status](https://ci.appveyor.com/api/projects/status/mm03ivfgrpo7g22b)](https://ci.appveyor.com/project/mthamil/efdocumentationgenerator)

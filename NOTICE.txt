@@ -1,14 +1,14 @@
    Entity Designer Documentation Generator
-   Copyright 2013 Matthew Hamilton - https://github.com/mthamil/EFDocumentationGenerator
+   Copyright 2017 Matthew Hamilton - https://github.com/mthamil/EFDocumentationGenerator
 
    The following libraries provide testing support: 
         xUnit.net is used as the unit testing framework
-        and is released under the Microsoft Public License (Ms-PL):
-            http://xunit.codeplex.com/
+        and is released under the Apache License, Version 2.0:
+            https://xunit.github.io/
 
         Moq is used for mock objects and is released under the BSD license:
             Copyright (c) 2007. Clarius Consulting, Manas Technology Solutions, InSTEDD
-            http://code.google.com/p/moq/
+            http://www.moqthis.com/
             All rights reserved.
 
    This software is originally based on and inspired by 

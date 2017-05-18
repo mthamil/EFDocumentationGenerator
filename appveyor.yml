@@ -1,0 +1,79 @@
+# Notes:
+#   - Indent each level of configuration with 2 spaces. Do not use tabs!
+#   - All section names are case-sensitive.
+#   - Section names should be unique on each level.
+
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+# Operating system (build VM template)
+os: Visual Studio 2017
+
+environment:  
+  major: 1
+  minor: 4
+  patch: 0
+
+
+# scripts that are called at very beginning, before repo cloning
+init:
+  - git config --global core.autocrlf true
+  - ps: |
+      $isCI = $Env:APPVEYOR_REPO_TAG -eq $false
+      $isBranch = $isCI -and ($Env:APPVEYOR_REPO_BRANCH -ne 'master')
+      $branchSuffix = "$(if ($isBranch) { '-' + $Env:APPVEYOR_REPO_BRANCH } else { $null })"
+      $Env:VersionPrefix = "$($Env:major).$($Env:minor).$($Env:patch)"
+      $Env:VersionSuffix = "$(if ($isCI) { 'CI' + $Env:APPVEYOR_BUILD_NUMBER + $branchSuffix } else { $null })"
+      appveyor UpdateBuild -Version "$($Env:VersionPrefix)$(if ($isCI) { '-' } else { $null })$($Env:VersionSuffix)"
+
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+# build Configuration, i.e. Debug, Release, etc.
+configuration: Release
+
+# scripts to run before build
+before_build:
+  - nuget restore
+
+build:
+  verbosity: minimal               # MSBuild verbosity level
+
+cache:
+  - packages -> **\packages.config
+
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: $(VersionPrefix).0
+  assembly_file_version: $(VersionPrefix).$(APPVEYOR_BUILD_NUMBER)
+  assembly_informational_version: '{version}'
+
+nuget:
+  project_feed: true
+  disable_publish_on_pr: true
+
+
+#---------------------------------#
+#       tests configuration       #
+#---------------------------------#
+
+test_script:
+  - ps: '&"$($env:APPVEYOR_BUILD_FOLDER)\packages\xunit.runner.console*\tools\xunit.console.exe" "$($env:APPVEYOR_BUILD_FOLDER)\Tests.Unit\bin\$($env:CONFIGURATION)\Tests.Unit.dll" -parallel none -appveyor'
+
+
+#---------------------------------#
+#      artifacts configuration    #
+#---------------------------------#
+
+artifacts:
+  - path: '**\*.vsix'
+
+
+#---------------------------------#
+#     deployment configuration    #
+#---------------------------------#
+
+deploy:
