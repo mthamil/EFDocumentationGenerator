@@ -31,9 +31,10 @@ namespace DocumentationGenerator.ConnectionStrings
 		{
 			var innerConnStringStart = entityConnectionString.IndexOf("data source=", StringComparison.OrdinalIgnoreCase);
 			var innerConnStringEnd = entityConnectionString.LastIndexOf("\"", StringComparison.OrdinalIgnoreCase);
-			var connectionString = entityConnectionString.Substring
-				(innerConnStringStart,
-				 (entityConnectionString.Length - innerConnStringStart) - (entityConnectionString.Length - innerConnStringEnd)).Trim();
+		    var connectionString = entityConnectionString.Substring(innerConnStringStart,
+		                                                            (entityConnectionString.Length - innerConnStringStart) -
+		                                                            (entityConnectionString.Length - innerConnStringEnd))
+		                                                 .Trim();
 
 			return connectionString;
 		}
