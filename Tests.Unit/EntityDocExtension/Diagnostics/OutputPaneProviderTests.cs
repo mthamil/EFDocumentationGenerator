@@ -13,80 +13,68 @@ namespace Tests.Unit.EntityDocExtension.Diagnostics
 	{
 		public OutputPaneProviderTests()
 		{
-			outputPanes.As<IEnumerable>().Setup(op => op.GetEnumerator())
-					   .Returns(() => panes.GetEnumerator());
+		    _outputPanes.As<IEnumerable>()
+		                .Setup(op => op.GetEnumerator())
+		                .Returns(() => _panes.GetEnumerator());
 
-			outputPanes.Setup(op => op.Add(It.IsAny<string>()))
-			           .Returns((string name) =>
-			           {
-						   var newPane = CreatePane(name);
-						   panes.Add(newPane);
-				           return newPane;
-			           });
+		    _outputPanes.Setup(op => op.Add(It.IsAny<string>()))
+		                .Returns((string name) =>
+		                {
+		                    var newPane = CreatePane(name);
+		                    _panes.Add(newPane);
+		                    return newPane;
+		                });
 
-			var outputWindow = new Mock<OutputWindow>();
-			outputWindow.SetupGet(w => w.OutputWindowPanes).Returns(outputPanes.Object);
+		    var outputWindow = Mock.Of<OutputWindow>(w => w.OutputWindowPanes == _outputPanes.Object);
+		    var window = Mock.Of<Window>(w => w.Object == outputWindow);
+		    var windows = Mock.Of<Windows>(ws => ws.Item(EnvDTEConstants.vsWindowKindOutput) == window);
+		    var dte = Mock.Of<DTE>(d => d.Windows == windows);
 
-			var window = new Mock<Window>();
-			window.SetupGet(w => w.Object).Returns(outputWindow.Object);
-
-			var windows = new Mock<Windows>();
-			windows.Setup(ws => ws.Item(EnvDTEConstants.vsWindowKindOutput)).Returns(window.Object);
-
-			var dte = new Mock<DTE>();
-			dte.SetupGet(d => d.Windows).Returns(windows.Object);
-
-			provider = new OutputPaneProvider(dte.Object);
+			_underTest = new OutputPaneProvider(dte);
 		}
 
 		[Fact]
 		public void Test_Pane_Does_Not_Exist()
 		{
 			// Arrange.
-			provider.PaneName = "TestPane";
+			_underTest.PaneName = "TestPane";
 
-			panes.Add(CreatePane("NotTheRightPane"));
+			_panes.Add(CreatePane("NotTheRightPane"));
 
 			// Act.
-			var pane = provider.Get();
+			var pane = _underTest.Get();
 
 			// Assert.
 			Assert.NotNull(pane);
 			Assert.Equal("TestPane", pane.Name);
-			Assert.Equal(2, panes.Count);
+			Assert.Equal(2, _panes.Count);
 		}
 
 		[Fact]
 		public void Test_Pane_Already_Exists()
 		{
 			// Arrange.
-			provider.PaneName = "TestPane";
+			_underTest.PaneName = "TestPane";
 
-			var existingPanes = new[] { "NotTheRightPane", "TestPane" }
-				.Select(CreatePane);
+			var existingPanes = new[] { "NotTheRightPane", "TestPane" }.Select(CreatePane);
 
 			foreach (var existingPane in existingPanes)
-				panes.Add(existingPane);	
+				_panes.Add(existingPane);	
 
 			// Act.
-			var pane = provider.Get();
+			var pane = _underTest.Get();
 
 			// Assert.
 			Assert.NotNull(pane);
 			Assert.Equal("TestPane", pane.Name);
-			Assert.Equal(2, panes.Count);
+			Assert.Equal(2, _panes.Count);
 		}
 
-		private OutputWindowPane CreatePane(string name)
-		{
-			var newPane = new Mock<OutputWindowPane>();
-			newPane.SetupGet(wp => wp.Name).Returns(name);
-			return newPane.Object;
-		}
+		private static OutputWindowPane CreatePane(string name) => Mock.Of<OutputWindowPane>(wp => wp.Name == name);
 
-		private readonly OutputPaneProvider provider;
+	    private readonly OutputPaneProvider _underTest;
 
-		private readonly ICollection<OutputWindowPane> panes = new List<OutputWindowPane>();
-		private readonly Mock<OutputWindowPanes> outputPanes = new Mock<OutputWindowPanes>();
+		private readonly ICollection<OutputWindowPane> _panes = new List<OutputWindowPane>();
+		private readonly Mock<OutputWindowPanes> _outputPanes = new Mock<OutputWindowPanes>();
 	}
 }

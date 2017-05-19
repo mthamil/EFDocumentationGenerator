@@ -12,90 +12,88 @@ using Xunit;
 
 namespace Tests.Unit.EntityDocExtension
 {
-	public class ModelGenerationExtensionTests
-	{
-		public ModelGenerationExtensionTests()
-		{
-			project.SetupGet(p => p.Properties).Returns(projectProperties.Object);
-			project.SetupGet(p => p.UniqueName).Returns("DataProject.csproj");
+    public class ModelGenerationExtensionTests
+    {
+        public ModelGenerationExtensionTests()
+        {
+            _project.SetupGet(p => p.Properties).Returns(_projectProperties.Object);
+            _project.SetupGet(p => p.UniqueName).Returns("DataProject.csproj");
 
-			var frameworkProperty = new Mock<Property>();
-			frameworkProperty.SetupGet(p => p.Value).Returns(".NETFramework,Version=v4.5");
+            var frameworkProperty = Mock.Of<Property>(p => p.Value == ".NETFramework,Version=v4.5");
+            _projectProperties.Setup(p => p.Item("TargetFrameworkMoniker"))
+                              .Returns(frameworkProperty);
 
-			projectProperties.Setup(p => p.Item("TargetFrameworkMoniker"))
-							 .Returns(frameworkProperty.Object);
+            _connectionStringLocator.Setup(c => c.Locate(_project.Object))
+                                    .Returns(new SqlConnectionStringBuilder(@"data source=LOCALHOST\SQLEXPRESS;initial catalog=Test"));
 
-			connectionStringLocator.Setup(c => c.Locate(project.Object))
-			                       .Returns(new SqlConnectionStringBuilder(@"data source=LOCALHOST\SQLEXPRESS;initial catalog=Test"));
+            _underTest = new ModelGenerationExtension(
+                Mock.Of<ILogger>(), 
+                _connectionStringLocator.Object, 
+                _ => _documentationSource.Object, 
+                _ => _modelUpdater.Object,
+                _errorList);
+        }
 
-			extension = new ModelGenerationExtension(
-				Mock.Of<ILogger>(), 
-				connectionStringLocator.Object, 
-				_ => documentationSource.Object, 
-				_ => modelUpdater.Object,
-				errorList);
-		}
+        [Fact]
+        public void Test_Update_Only_Occurs_Once()
+        {
+            // Arrange.
+            var generationContext = Mock.Of<ModelGenerationExtensionContext>(
+                c => c.Project == _project.Object &&
+                     c.WizardKind == WizardKind.UpdateModel &&
+                     c.CurrentDocument == _document);
 
-		private readonly ModelGenerationExtension extension;
+            var updateContext = Mock.Of<UpdateModelExtensionContext>(
+                c => c.Project == _project.Object &&
+                     c.WizardKind == WizardKind.UpdateModel &&
+                     c.CurrentDocument == _document);
 
-		[Fact]
-		public void Test_Update_Only_Occurs_Once()
-		{
-			// Arrange.
-			var generationContext = Mock.Of<ModelGenerationExtensionContext>(
-				c => c.Project == project.Object &&
-				     c.WizardKind == WizardKind.UpdateModel &&
-				     c.CurrentDocument == document);
+            // Act.
+            _underTest.OnAfterModelGenerated(generationContext);
+            _underTest.OnAfterModelUpdated(updateContext);
 
-			var updateContext = Mock.Of<UpdateModelExtensionContext>(
-				c => c.Project == project.Object &&
-				     c.WizardKind == WizardKind.UpdateModel &&
-				     c.CurrentDocument == document);
+            // Assert.
+            _modelUpdater.Verify(u => u.UpdateDocumentation(_document), Times.Once());
+        }
 
-			// Act.
-			extension.OnAfterModelGenerated(generationContext);
-			extension.OnAfterModelUpdated(updateContext);
+        [Fact(Skip="This behavior may not be desirable.")]
+        public void Test_Update_Prevented_By_Model_Errors()
+        {
+            // Arrange.
+            var error = new Mock<ErrorItem> { DefaultValue = DefaultValue.Mock };
+            error.SetupGet(e => e.Project).Returns(_project.Object.UniqueName);
+            error.SetupGet(e => e.Description).Returns("Error 1234: Testing");
+            error.SetupGet(e => e.FileName).Returns("test.edmx");
 
-			// Assert.
-			modelUpdater.Verify(u => u.UpdateDocumentation(document), Times.Once());
-		}
+            _errorList.Add(error.Object);
 
-		[Fact(Skip="This behavior may not be desirable.")]
-		public void Test_Update_Prevented_By_Model_Errors()
-		{
-			// Arrange.
-			var error = new Mock<ErrorItem> { DefaultValue = DefaultValue.Mock };
-			error.SetupGet(e => e.Project).Returns(project.Object.UniqueName);
-			error.SetupGet(e => e.Description).Returns("Error 1234: Testing");
-			error.SetupGet(e => e.FileName).Returns("test.edmx");
+            var generationContext = Mock.Of<ModelGenerationExtensionContext>(
+                c => c.Project == _project.Object &&
+                     c.WizardKind == WizardKind.UpdateModel &&
+                     c.CurrentDocument == _document);
 
-			errorList.Add(error.Object);
+            var updateContext = Mock.Of<UpdateModelExtensionContext>(
+                c => c.Project == _project.Object &&
+                     c.WizardKind == WizardKind.UpdateModel &&
+                     c.CurrentDocument == _document);
 
-			var generationContext = Mock.Of<ModelGenerationExtensionContext>(
-				c => c.Project == project.Object &&
-					 c.WizardKind == WizardKind.UpdateModel &&
-					 c.CurrentDocument == document);
+            // Act.
+            _underTest.OnAfterModelGenerated(generationContext);
+            _underTest.OnAfterModelUpdated(updateContext);
 
-			var updateContext = Mock.Of<UpdateModelExtensionContext>(
-				c => c.Project == project.Object &&
-					 c.WizardKind == WizardKind.UpdateModel &&
-					 c.CurrentDocument == document);
+            // Assert.
+            _modelUpdater.Verify(u => u.UpdateDocumentation(_document), Times.Never());
+        }
 
-			// Act.
-			extension.OnAfterModelGenerated(generationContext);
-			extension.OnAfterModelUpdated(updateContext);
+        private readonly ModelGenerationExtension _underTest;
 
-			// Assert.
-			modelUpdater.Verify(u => u.UpdateDocumentation(document), Times.Never());
-		}
+        private readonly Mock<Project> _project = new Mock<Project> { DefaultValue = DefaultValue.Mock };
+        private readonly Mock<Properties> _projectProperties = new Mock<Properties>();
+        private readonly XDocument _document = new XDocument();
 
-		private readonly Mock<Project> project = new Mock<Project> { DefaultValue = DefaultValue.Mock };
-		private readonly Mock<Properties> projectProperties = new Mock<Properties>();
-		private readonly XDocument document = new XDocument();
-
-		private readonly List<ErrorItem> errorList = new List<ErrorItem>();
-		private readonly Mock<IModelDocumentationUpdater> modelUpdater = new Mock<IModelDocumentationUpdater>();
-		private readonly Mock<IDocumentationSource> documentationSource = new Mock<IDocumentationSource>();
-		private readonly Mock<IConnectionStringLocator> connectionStringLocator = new Mock<IConnectionStringLocator>();
-	}
+        private readonly List<ErrorItem> _errorList = new List<ErrorItem>();
+        private readonly Mock<IModelDocumentationUpdater> _modelUpdater = new Mock<IModelDocumentationUpdater>();
+        private readonly Mock<IDocumentationSource> _documentationSource = new Mock<IDocumentationSource>();
+        private readonly Mock<IConnectionStringLocator> _connectionStringLocator = new Mock<IConnectionStringLocator>();
+    }
 }

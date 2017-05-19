@@ -18,34 +18,35 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
             defaultProjectItem.SetupGet(pi => pi.ProjectItems)
                               .Returns(new Mock<ProjectItems> {  DefaultValue = DefaultValue.Mock }.Object);
 
-            projectItems.Add(defaultProjectItem.Object);
+            _projectItems.Add(defaultProjectItem.Object);
 
-            mockProjectItems.Setup(pi => pi.GetEnumerator())
-                            .Returns(() => projectItems.GetEnumerator());
+            _mockProjectItems.Setup(pi => pi.GetEnumerator())
+                             .Returns(() => _projectItems.GetEnumerator());
 
-            mockProjectItems.As<IEnumerable>().Setup(pi => pi.GetEnumerator())
-                            .Returns(() => projectItems.GetEnumerator());
+            _mockProjectItems.As<IEnumerable>()
+                             .Setup(pi => pi.GetEnumerator())
+                             .Returns(() => _projectItems.GetEnumerator());
 
-            mockProjectItems.SetupGet(pi => pi.Count)
-                            .Returns(() => projectItems.Count);
+            _mockProjectItems.SetupGet(pi => pi.Count)
+                             .Returns(() => _projectItems.Count);
 
-            project.SetupGet(p => p.ProjectItems)
-                   .Returns(mockProjectItems.Object);
+            _project.SetupGet(p => p.ProjectItems)
+                    .Returns(_mockProjectItems.Object);
         }
 
         [Fact]
         public void Test_Locate_FromProject()
         {
-            using (var tempConfigFile = new TemporaryFile(validAppConfigXml))
+            using (var tempConfigFile = new TemporaryFile(ValidConfigXml))
             {
                 // Arrange.
-                project.SetupGet(pi => pi.Saved).Returns(true);
+                _project.SetupGet(pi => pi.Saved).Returns(true);
 
                 var appConfigItem = CreateAppConfig(tempConfigFile.File);
-                projectItems.Add(appConfigItem.Object);
+                _projectItems.Add(appConfigItem.Object);
 
                 // Act.
-                var connectionString = locator.Locate(project.Object);
+                var connectionString = _underTest.Locate(_project.Object);
 
                 // Assert.
                 Assert.Equal(@"LOCALHOST\SQLEXPRESS", connectionString.DataSource);
@@ -53,22 +54,22 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
                 Assert.True(connectionString.IntegratedSecurity);
                 Assert.True(connectionString.MultipleActiveResultSets);
                 appConfigItem.Verify(pi => pi.Save(It.IsAny<string>()), Times.Never());
-                project.Verify(p => p.Save(It.IsAny<string>()), Times.Never());
+                _project.Verify(p => p.Save(It.IsAny<string>()), Times.Never());
             }
         }
 
         [Fact]
         public void Test_Unsaved_AppConfig()
         {
-            using (var tempConfigFile = new TemporaryFile(validAppConfigXml))
+            using (var tempConfigFile = new TemporaryFile(ValidConfigXml))
             {
                 // Arrange.
                 var appConfigItem = CreateAppConfig(tempConfigFile.File, true);
 
-                projectItems.Add(appConfigItem.Object);
+                _projectItems.Add(appConfigItem.Object);
 
                 // Act.
-                locator.Locate(project.Object);
+                _underTest.Locate(_project.Object);
 
                 // Assert.
                 appConfigItem.Verify(pi => pi.Save(""), Times.Once());
@@ -80,7 +81,7 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
         {
             // Act/Assert.
             Assert.Throws<ConnectionStringLocationException>(() => 
-                locator.Locate(project.Object));
+                _underTest.Locate(_project.Object));
         }
 
         [Fact]
@@ -92,11 +93,11 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
                                                 </configuration>"))
             {
                 // Arrange.
-                projectItems.Add(CreateAppConfig(tempConfigFile.File).Object);
+                _projectItems.Add(CreateAppConfig(tempConfigFile.File).Object);
 
                 // Act/Assert.
                 Assert.Throws<ConnectionStringLocationException>(() =>
-                    locator.Locate(project.Object));
+                    _underTest.Locate(_project.Object));
             }
         }
 
@@ -110,15 +111,15 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
                                                 </configuration>"))
             {
                 // Arrange.
-                projectItems.Add(CreateAppConfig(tempConfigFile.File).Object);
+                _projectItems.Add(CreateAppConfig(tempConfigFile.File).Object);
 
                 // Act/Assert.
                 Assert.Throws<ConnectionStringLocationException>(() =>
-                    locator.Locate(project.Object));
+                    _underTest.Locate(_project.Object));
             }
         }
 
-        private Mock<ProjectItem> CreateAppConfig(FileInfo configFile, bool hasChanges = false)
+        private static Mock<ProjectItem> CreateAppConfig(FileInfo configFile, bool hasChanges = false)
         {
             var appConfigItem = new Mock<ProjectItem> { DefaultValue = DefaultValue.Mock };
             appConfigItem.SetupGet(pi => pi.ProjectItems)
@@ -130,14 +131,14 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
             return appConfigItem;
         }
 
-        private readonly ConnectionStringLocator locator = new ConnectionStringLocator();
+        private readonly ConnectionStringLocator _underTest = new ConnectionStringLocator();
 
-        private readonly Mock<Project> project = new Mock<Project> { DefaultValue = DefaultValue.Mock };
+        private readonly Mock<Project> _project = new Mock<Project> { DefaultValue = DefaultValue.Mock };
 
-        private readonly Mock<ProjectItems> mockProjectItems = new Mock<ProjectItems>();
-        private readonly IList<ProjectItem> projectItems = new List<ProjectItem>();
+        private readonly Mock<ProjectItems> _mockProjectItems = new Mock<ProjectItems>();
+        private readonly IList<ProjectItem> _projectItems = new List<ProjectItem>();
 
-        private const string validAppConfigXml =
+        private const string ValidConfigXml =
 @"<?xml version='1.0' encoding='utf-8'?>
 <configuration>
   <connectionStrings>
