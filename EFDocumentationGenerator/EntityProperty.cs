@@ -34,11 +34,11 @@ namespace DocumentationGenerator
 		/// <summary>
 		/// The property name.
 		/// </summary>
-		public string Name { get; private set; }
+		public string Name { get; }
 
 		/// <summary>
 		/// The property type.
 		/// </summary>
-		public EntityPropertyType Type { get; private set; }
+		public EntityPropertyType Type { get; }
 	}
 }

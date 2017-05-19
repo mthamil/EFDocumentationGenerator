@@ -27,12 +27,9 @@ namespace DocumentationGenerator.Utilities
 		/// <summary>
 		/// Provides access to edm schema XML namespace-specific operations.
 		/// </summary>
-		public static INamespacedOperations Edm(this XContainer element)
-		{
-			return new NamespacedOperations(element, EdmNamespace);
-		}
+		public static INamespacedOperations Edm(this XContainer element) => new NamespacedOperations(element, EdmNamespace);
 
-		private const string EdmNamespace = "http://schemas.microsoft.com/ado/2009/11/edm";
+	    private const string EdmNamespace = "http://schemas.microsoft.com/ado/2009/11/edm";
 
 		/// <summary>
 		/// Provides access to XML namespace-specific operations.
@@ -82,31 +79,21 @@ namespace DocumentationGenerator.Utilities
 			public NamespacedOperations(XContainer element, string nameSpace)
 			{
 				_element = element;
-				_nameSpace = nameSpace;
+				Namespace = nameSpace;
 			}
 
 			/// <see cref="INamespacedOperations.Descendants"/>
-			public IEnumerable<XElement> Descendants(string name)
-			{
-				return _element.Descendants(XName.Get(name, _nameSpace));
-			}
+			public IEnumerable<XElement> Descendants(string name) => _element.Descendants(XName.Get(name, Namespace));
 
-			/// <see cref="INamespacedOperations.Element"/>
-			public XElement Element(string name)
-			{
-				return _element.Element(XName.Get(name, _nameSpace));
-			}
+		    /// <see cref="INamespacedOperations.Element"/>
+			public XElement Element(string name) => _element.Element(XName.Get(name, Namespace));
 
-			/// <see cref="INamespacedOperations.Elements"/>
-			public IEnumerable<XElement> Elements(string name)
-			{
-				return _element.Elements(XName.Get(name, _nameSpace));
-			}
+		    /// <see cref="INamespacedOperations.Elements"/>
+			public IEnumerable<XElement> Elements(string name) => _element.Elements(XName.Get(name, Namespace));
 
-			/// <see cref="INamespacedOperations.Namespace"/>
-			public string Namespace { get { return _nameSpace; } }
+		    /// <see cref="INamespacedOperations.Namespace"/>
+			public string Namespace { get; }
 
-			private readonly string _nameSpace;
 			private readonly XContainer _element;
 		}
 	}
