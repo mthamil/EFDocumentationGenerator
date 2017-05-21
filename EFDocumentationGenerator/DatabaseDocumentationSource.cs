@@ -19,71 +19,69 @@ using System.Data.SqlClient;
 
 namespace DocumentationGenerator
 {
-	/// <summary>
-	/// An entity documentation source that pulls documentation from a SQL Server database.
-	/// </summary>
-	internal class DatabaseDocumentationSource : IDocumentationSource
-	{
-		/// <summary>
-		/// Initializes a new <see cref="DatabaseDocumentationSource"/>.
-		/// </summary>
-		/// <param name="connectionString">The database connection string</param>
-		public DatabaseDocumentationSource(string connectionString)
-			: this(connectionString, cs => new SqlConnection(cs))
-		{
-		}
+    /// <summary>
+    /// An entity documentation source that pulls documentation from a SQL Server database.
+    /// </summary>
+    internal class DatabaseDocumentationSource : IDocumentationSource
+    {
+        /// <summary>
+        /// Initializes a new <see cref="DatabaseDocumentationSource"/>.
+        /// </summary>
+        /// <param name="connectionString">The database connection string</param>
+        public DatabaseDocumentationSource(string connectionString)
+            : this(connectionString, cs => new SqlConnection(cs))
+        {
+        }
 
-		/// <summary>
-		/// Initializes a new <see cref="DatabaseDocumentationSource"/>.
-		/// </summary>
-		/// <param name="connectionString">The database connection string</param>
-		/// <param name="connectionFactory">Creates database connections from a connection string</param>
-		public DatabaseDocumentationSource(string connectionString, Func<string, IDbConnection> connectionFactory)
-		{
-			_connection = connectionFactory(connectionString);
-			_connection.Open();
-		}
+        /// <summary>
+        /// Initializes a new <see cref="DatabaseDocumentationSource"/>.
+        /// </summary>
+        /// <param name="connectionString">The database connection string</param>
+        /// <param name="connectionFactory">Creates database connections from a connection string</param>
+        public DatabaseDocumentationSource(string connectionString, Func<string, IDbConnection> connectionFactory)
+        {
+            _connection = connectionFactory(connectionString);
+            _connection.Open();
+        }
 
-		/// <see cref="IDisposable.Dispose"/>
-		public void Dispose()
-		{
-			_connection.Dispose();
-		}
+        /// <see cref="IDisposable.Dispose"/>
+        public void Dispose()
+        {
+            _connection.Dispose();
+        }
 
-		/// <see cref="IDocumentationSource.GetDocumentation"/>
-		public string GetDocumentation(string entityName, EntityProperty property = null)
-		{
-			bool useSecondLevel = property != null;
+        /// <see cref="IDocumentationSource.GetDocumentation"/>
+        public string GetDocumentation(string entityName, EntityProperty property = null)
+        {
+            bool useSecondLevel = property != null;
 
-			var query = String.Format(@"
-						SELECT [MSDescription].[value] FROM [sys].[schemas]
-						CROSS APPLY fn_listextendedproperty (
-							'MS_Description', 
-							'schema', [sys].[schemas].[name], 
-							'table', @tableName,
-							 {0}, {1}) as MSDescription
-						WHERE [sys].[schemas].[name] <> 'sys' AND 
-							  [sys].[schemas].[name] NOT LIKE 'db\_%' ESCAPE '\'",
-					useSecondLevel ? GetSecondLevelType(property.Type) : "null",
-					useSecondLevel ? "@secondLevelName" : "null");
+            var query = String.Format(@"
+                        SELECT [MSDescription].[value] FROM [sys].[schemas]
+                        CROSS APPLY fn_listextendedproperty (
+                            'MS_Description', 
+                            'schema', [sys].[schemas].[name], 
+                            'table', @tableName,
+                             {0}, {1}) as MSDescription
+                        WHERE [sys].[schemas].[name] <> 'sys' AND 
+                              [sys].[schemas].[name] NOT LIKE 'db\_%' ESCAPE '\'",
+                    useSecondLevel ? GetSecondLevelType(property.Type) : "null",
+                    useSecondLevel ? "@secondLevelName" : "null");
 
-			using (var command = _connection.CreateCommand())
-			{
-				command.CommandText = query;
-				command.Parameters.Add(new SqlParameter("tableName", entityName));
+            using (var command = _connection.CreateCommand())
+            {
+                command.CommandText = query;
+                command.Parameters.Add(new SqlParameter("tableName", entityName));
 
-				if (useSecondLevel)
-					command.Parameters.Add(new SqlParameter("secondLevelName", property.Name));
+                if (useSecondLevel)
+                    command.Parameters.Add(new SqlParameter("secondLevelName", property.Name));
 
-				return command.ExecuteScalar() as string;
-			}
-		}
+                return command.ExecuteScalar() as string;
+            }
+        }
 
-		private string GetSecondLevelType(EntityPropertyType propertyType)
-		{
-			return propertyType == EntityPropertyType.Property ? "'column'" : "'constraint'";
-		}
+        private static string GetSecondLevelType(EntityPropertyType propertyType) => 
+            propertyType == EntityPropertyType.Property ? "'column'" : "'constraint'";
 
-		private readonly IDbConnection _connection;
-	}
+        private readonly IDbConnection _connection;
+    }
 }

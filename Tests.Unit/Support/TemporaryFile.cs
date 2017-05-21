@@ -41,9 +41,7 @@ namespace Tests.Unit.Support
 		/// <summary>
 		/// The actual temporary file.
 		/// </summary>
-		public FileInfo File { get; private set; }
-
-		#region IDisposable Implementation
+		public FileInfo File { get; }
 
 		/// <see cref="IDisposable.Dispose"/>
 		public void Dispose()
@@ -90,7 +88,5 @@ namespace Tests.Unit.Support
 		}
 
 		private bool _isDisposed;
-
-		#endregion IDisposable Implementation
 	}
 }

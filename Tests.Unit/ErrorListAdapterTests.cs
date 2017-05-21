@@ -11,25 +11,24 @@ namespace Tests.Unit
 	{
 		public ErrorListAdapterTests()
 		{
-			errorList.SetupGet(el => el.ErrorItems).Returns(errorItems.Object);
-			errorItems.SetupGet(ei => ei.Count).Returns(() => errors.Count);
-			errorItems.Setup(ei => ei.Item(It.IsAny<object>())).Returns((object index) => errors[(int)index - 1]);
+			_errorList.SetupGet(el => el.ErrorItems).Returns(_errorItems.Object);
+			_errorItems.SetupGet(ei => ei.Count).Returns(() => _errors.Count);
+		    _errorItems.Setup(ei => ei.Item(It.IsAny<object>()))
+		               .Returns((object index) => _errors[(int)index - 1]);
 
-			for (int i = 1; i < 4; i++)
-			{
-				var error = new Mock<ErrorItem>();
-				error.SetupGet(e => e.Description).Returns("Error" + i);
-				errors.Add(error.Object);
-			}
+		    _errors = Mocks.Of<ErrorItem>()
+		                   .Where((error, i) => error.Description == "Error" + (i + 1))
+		                   .Take(3)
+		                   .ToList();
 
-			errorListAdapter = new ErrorListAdapter(errorList.Object);
+			_underTest = new ErrorListAdapter(_errorList.Object);
 		}
 
 		[Fact]
 		public void Test_Count()
 		{
 			// Act.
-			int count = errorListAdapter.Count;
+			int count = _underTest.Count;
 
 			// Assert.
 			Assert.Equal(3, count);
@@ -39,9 +38,9 @@ namespace Tests.Unit
 		public void Test_Indexer()
 		{
 			// Act.
-			var error1 = errorListAdapter[0];
-			var error2 = errorListAdapter[1];
-			var error3 = errorListAdapter[2];
+			var error1 = _underTest[0];
+			var error2 = _underTest[1];
+			var error3 = _underTest[2];
 
 			// Assert.
 			Assert.Equal("Error1", error1.Description);
@@ -53,16 +52,16 @@ namespace Tests.Unit
 		public void Test_GetEnumerator()
 		{
 			// Act.
-			var errorDescriptions = errorListAdapter.Select(e => e.Description);
+			var errorDescriptions = _underTest.Select(e => e.Description);
 
 			// Assert.
-			Assert.Equal(new[] { "Error1", "Error2", "Error3" }, errorDescriptions.ToArray());
+			Assert.Equal(new[] { "Error1", "Error2", "Error3" }, errorDescriptions);
 		}
 
-		private readonly ErrorListAdapter errorListAdapter;
+		private readonly ErrorListAdapter _underTest;
 
-		private readonly List<ErrorItem> errors = new List<ErrorItem>();
-		private readonly Mock<ErrorItems> errorItems = new Mock<ErrorItems> { DefaultValue = DefaultValue.Mock };
-		private readonly Mock<ErrorList> errorList = new Mock<ErrorList> { DefaultValue = DefaultValue.Mock};
+		private readonly List<ErrorItem> _errors;
+		private readonly Mock<ErrorItems> _errorItems = new Mock<ErrorItems> { DefaultValue = DefaultValue.Mock };
+		private readonly Mock<ErrorList> _errorList = new Mock<ErrorList> { DefaultValue = DefaultValue.Mock};
 	}
 }

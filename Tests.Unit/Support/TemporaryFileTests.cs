@@ -75,7 +75,7 @@ namespace Tests.Unit.Support
 			Assert.False(file.Exists);
 		}
 
-		private FileInfo GetTempFile()
+		private static FileInfo GetTempFile()
 		{
 			var temp = new TemporaryFile().Touch();
 			return temp.File;

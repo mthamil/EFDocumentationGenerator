@@ -75,7 +75,7 @@ namespace DocumentationGenerator
 			}
 		}
 
-		private void UpdateNodeDocumentation(XElement element, string documentation)
+		private void UpdateNodeDocumentation(XContainer element, string documentation)
 		{
 			if (String.IsNullOrWhiteSpace(documentation))
 				return;

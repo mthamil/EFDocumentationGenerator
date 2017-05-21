@@ -18,7 +18,7 @@ namespace DocumentationGenerator
 	/// <summary>
 	/// Constants that are common to all Visual Studio programming languages.
 	/// </summary>
-	internal class EnvDTEConstants
+	internal static class EnvDTEConstants
 	{
 		/// <summary>
 		/// The Output window.

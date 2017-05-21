@@ -27,9 +27,6 @@ namespace DocumentationGenerator
 	public class GlobalServiceProvider : IServiceProvider
 	{
 		/// <see cref="IServiceProvider.GetService"/>
-		public object GetService(Type serviceType)
-		{
-			return ServiceProvider.GlobalProvider.GetService(serviceType);
-		}
+		public object GetService(Type serviceType) => ServiceProvider.GlobalProvider.GetService(serviceType);
 	}
 }

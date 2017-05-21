@@ -23,63 +23,53 @@ using DocumentationGenerator.Utilities;
 
 namespace DocumentationGenerator
 {
-	/// <summary>
-	/// An adapter for the Visual Studio Error List.
-	/// </summary>
-	[Export(typeof(IReadOnlyList<ErrorItem>))]
-	public class ErrorListAdapter : IReadOnlyList<ErrorItem>
-	{
-		/// <summary>
-		/// Initializes a new <see cref="ErrorListAdapter"/>.
-		/// </summary>
-		/// <param name="serviceProvider">Provides access to application services</param>
-		[ImportingConstructor]
-		public ErrorListAdapter(IServiceProvider serviceProvider)
-			: this((ErrorList)((DTE2)serviceProvider.GetService<DTE>()).Windows.Item(EnvDTEConstants.vsWindowKindErrorList).Object)
-		{
-		}
+    /// <summary>
+    /// An adapter for the Visual Studio Error List.
+    /// </summary>
+    [Export(typeof(IReadOnlyList<ErrorItem>))]
+    public class ErrorListAdapter : IReadOnlyList<ErrorItem>
+    {
+        /// <summary>
+        /// Initializes a new <see cref="ErrorListAdapter"/>.
+        /// </summary>
+        /// <param name="serviceProvider">Provides access to application services</param>
+        [ImportingConstructor]
+        public ErrorListAdapter(IServiceProvider serviceProvider)
+            : this((ErrorList)((DTE2)serviceProvider.GetService<DTE>()).Windows.Item(EnvDTEConstants.vsWindowKindErrorList).Object)
+        {
+        }
 
-		/// <summary>
-		/// Initializes a new <see cref="ErrorListAdapter"/>
-		/// </summary>
-		/// <param name="innerErrorList">A wrapped Visual Studio Error List</param>
-		public ErrorListAdapter(ErrorList innerErrorList)
-		{
-			_innerErrorList = innerErrorList;
-		}
+        /// <summary>
+        /// Initializes a new <see cref="ErrorListAdapter"/>
+        /// </summary>
+        /// <param name="innerErrorList">A wrapped Visual Studio Error List</param>
+        public ErrorListAdapter(ErrorList innerErrorList)
+        {
+            _innerErrorList = innerErrorList;
+        }
 
-		/// <see cref="IEnumerable{T}.GetEnumerator"/>
-		public IEnumerator<ErrorItem> GetEnumerator()
-		{
-			for (int i = 0; i < Count; i++)
-				yield return this[i];
-		}
+        /// <see cref="IEnumerable{T}.GetEnumerator"/>
+        public IEnumerator<ErrorItem> GetEnumerator()
+        {
+            for (var i = 0; i < Count; i++)
+                yield return this[i];
+        }
 
-		/// <see cref="IEnumerable.GetEnumerator"/>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
+        /// <see cref="IEnumerable.GetEnumerator"/>
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-		/// <summary>
-		/// The number of errors in the list.
-		/// </summary>
-		public int Count 
-		{ 
-			get { return _innerErrorList.ErrorItems.Count; } 
-		}
+        /// <summary>
+        /// The number of errors in the list.
+        /// </summary>
+        public int Count => _innerErrorList.ErrorItems.Count;
 
-		/// <summary>
-		/// Retrieves the error at a given index.
-		/// </summary>
-		/// <param name="index">The index to access</param>
-		/// <returns>An error list item</returns>
-		public ErrorItem this[int index]
-		{
-			// Error list uses 1-based indices.
-			get { return _innerErrorList.ErrorItems.Item(index + 1); }
-		}
+        /// <summary>
+        /// Retrieves the error at a given index.
+        /// </summary>
+        /// <param name="index">The index to access</param>
+        /// <returns>An error list item</returns>
+        public ErrorItem this[int index] => _innerErrorList.ErrorItems.Item(index + 1); // Error list uses 1-based indices.
 
-		private readonly ErrorList _innerErrorList;
-	}
+        private readonly ErrorList _innerErrorList;
+    }
 }

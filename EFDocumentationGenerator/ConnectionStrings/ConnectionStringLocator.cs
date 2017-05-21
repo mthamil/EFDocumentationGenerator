@@ -23,71 +23,68 @@ using EnvDTE;
 
 namespace DocumentationGenerator.ConnectionStrings
 {
-	/// <summary>
-	/// Locates and extracts the connection string to use for model updates.
-	/// </summary>
-	[Export(typeof(IConnectionStringLocator))]
-	public class ConnectionStringLocator : IConnectionStringLocator
-	{
-		/// <summary>
-		/// Attempts to find a database connection string in the App.config file of a project.
-		/// </summary>
-		/// <param name="project">The project to search for a connection string</param>
-		public SqlConnectionStringBuilder Locate(Project project)
-		{
-			// Try to find the app config file.
-			var appConfigItem = project.TryFindChild(item => IgnoreCaseEquals(item.Name, ConfigName));
-			if (appConfigItem == null)
-				throw new ConnectionStringLocationException(String.Format("{0} file does not exist", ConfigName));
+    /// <summary>
+    /// Locates and extracts the connection string to use for model updates.
+    /// </summary>
+    [Export(typeof(IConnectionStringLocator))]
+    public class ConnectionStringLocator : IConnectionStringLocator
+    {
+        /// <summary>
+        /// Attempts to find a database connection string in the App.config file of a project.
+        /// </summary>
+        /// <param name="project">The project to search for a connection string</param>
+        public SqlConnectionStringBuilder Locate(Project project)
+        {
+            // Try to find the app config file.
+            var configItem = project.TryFindChild(item => IgnoreCaseEquals(item.Name, ConfigName));
+            if (configItem == null)
+                throw new ConnectionStringLocationException($"{ConfigName} file does not exist.");
 
-			// If the app.config file is unsaved, it probably had a connection string added to it. Save it.
-			if (!appConfigItem.Saved)
-				appConfigItem.Save();
+            // If the app.config file is unsaved, it probably had a connection string added to it. Save it.
+            if (!configItem.Saved)
+                configItem.Save();
 
-			// Try to find the connection string.
-			string entityConnString = TryGetConnectionString(appConfigItem);
-			var connectionString = _innerConnStringParser.Parse(entityConnString);
+            // Try to find the connection string.
+            var entityConnString = TryGetConnectionString(configItem);
+            var connectionString = _innerConnStringParser.Parse(entityConnString);
 
-			return new SqlConnectionStringBuilder(connectionString);
-		}
+            return new SqlConnectionStringBuilder(connectionString);
+        }
 
-		/// <summary>
-		/// Searches a config file for an Entity Framework connection string.
-		/// </summary>
-		private string TryGetConnectionString(ProjectItem appConfigItem)
-		{
-			// Try to find the connection strings section.
-			var appConfigFileName = appConfigItem.FileNames[0];
-			var appConfig = XDocument.Load(appConfigFileName);
-			var connectionStringsElement = appConfig
-				.Elements(XName.Get("configuration")).Single()
-				.Elements(XName.Get("connectionStrings")).ToList();
+        /// <summary>
+        /// Searches a config file for an Entity Framework connection string.
+        /// </summary>
+        private string TryGetConnectionString(ProjectItem configItem)
+        {
+            // Try to find the connection strings section.
+            var configFileName = configItem.FileNames[0];
+            var config = XDocument.Load(configFileName);
+            var connectionStringsElement = config
+                .Elements(XName.Get("configuration")).Single()
+                .Elements(XName.Get("connectionStrings")).ToList();
 
-			if (!connectionStringsElement.Any())
-				throw new ConnectionStringLocationException(String.Format("No valid connection strings found in {0} file", ConfigName));
+            if (!connectionStringsElement.Any())
+                throw new ConnectionStringLocationException($"No valid connection strings found in {ConfigName} file.");
 
-			// Try to find the Entity Framework connection string.
-			var entityConnElement = connectionStringsElement
-				.Elements(XName.Get("add"))
-				.FirstOrDefault(element =>
-					element.Attribute("providerName") != null &&
-					IgnoreCaseEquals(element.Attribute("providerName").Value, EntityProviderName));
+            // Try to find the Entity Framework connection string.
+            var entityConnElement = connectionStringsElement
+                .Elements(XName.Get("add"))
+                .FirstOrDefault(element =>
+                    IgnoreCaseEquals(element.Attribute("providerName")?.Value, EntityProviderName));
 
-			if (entityConnElement == null)
-				throw new ConnectionStringLocationException(String.Format("Connection string for provider '{0}' not found.", EntityProviderName));
+            if (entityConnElement == null)
+                throw new ConnectionStringLocationException($"Connection string for provider '{EntityProviderName}' not found.");
 
-			// Parse the connection string.
-			return entityConnElement.Attribute("connectionString").Value;
-		}
+            // Parse the connection string.
+            return entityConnElement.Attribute("connectionString").Value;
+        }
 
-		private static bool IgnoreCaseEquals(string first, string second)
-		{
-			return String.Equals(first, second, StringComparison.InvariantCultureIgnoreCase);
-		}
+        private static bool IgnoreCaseEquals(string first, string second) => 
+            String.Equals(first, second, StringComparison.OrdinalIgnoreCase);
 
-		private readonly InnerConnectionStringParser _innerConnStringParser = new InnerConnectionStringParser();
+        private readonly InnerConnectionStringParser _innerConnStringParser = new InnerConnectionStringParser();
 
-		private const string ConfigName = "App.config";
-		private const string EntityProviderName = "System.Data.EntityClient";
-	}
+        private const string ConfigName = "App.config";
+        private const string EntityProviderName = "System.Data.EntityClient";
+    }
 }

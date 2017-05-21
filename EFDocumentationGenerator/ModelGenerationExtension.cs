@@ -43,12 +43,11 @@ namespace DocumentationGenerator
         /// <param name="errorList">A read-only view of the Error List</param>
         [ImportingConstructor]
         public ModelGenerationExtension(ILogger logger, IConnectionStringLocator connectionStringLocator, IReadOnlyList<ErrorItem> errorList)
-            : this(
-                logger,
-                connectionStringLocator,
-                connectionString => new DatabaseDocumentationSource(connectionString),
-                source => new ModelDocumentationUpdater(source), 
-                errorList)
+            : this(logger,
+                   connectionStringLocator,
+                   connectionString => new DatabaseDocumentationSource(connectionString),
+                   source => new ModelDocumentationUpdater(source), 
+                   errorList)
         {
         }
 
