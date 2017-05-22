@@ -34,16 +34,18 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
                     .Returns(_mockProjectItems.Object);
         }
 
-        [Fact]
-        public void Test_Locate_FromProject()
+        [Theory]
+        [InlineData("App.config")]
+        [InlineData("Web.config")]
+        public void Test_Locate_FromProject(string configName)
         {
             using (var tempConfigFile = new TemporaryFile(ValidConfigXml))
             {
                 // Arrange.
                 _project.SetupGet(pi => pi.Saved).Returns(true);
 
-                var appConfigItem = CreateAppConfig(tempConfigFile.File);
-                _projectItems.Add(appConfigItem.Object);
+                var configItem = CreateAppConfig(tempConfigFile.File, configName);
+                _projectItems.Add(configItem.Object);
 
                 // Act.
                 var connectionString = _underTest.Locate(_project.Object);
@@ -53,26 +55,34 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
                 Assert.Equal("Test", connectionString.InitialCatalog);
                 Assert.True(connectionString.IntegratedSecurity);
                 Assert.True(connectionString.MultipleActiveResultSets);
-                appConfigItem.Verify(pi => pi.Save(It.IsAny<string>()), Times.Never());
-                _project.Verify(p => p.Save(It.IsAny<string>()), Times.Never());
             }
         }
 
-        [Fact]
-        public void Test_Unsaved_AppConfig()
+        [Theory]
+        [InlineData("App.config")]
+        [InlineData("Web.config")]
+        public void Test_Unsaved_Config(string configName)
         {
             using (var tempConfigFile = new TemporaryFile(ValidConfigXml))
             {
                 // Arrange.
-                var appConfigItem = CreateAppConfig(tempConfigFile.File, true);
+                var configItem = CreateAppConfig(tempConfigFile.File, configName, true);
 
-                _projectItems.Add(appConfigItem.Object);
+                _projectItems.Add(configItem.Object);
+
+                configItem.SetupGet(ci => ci.Document)
+                          .Returns(Mock.Of<Document>(d => d.Object(It.IsAny<string>()) ==
+                                       Mock.Of<TextDocument>(td => td.EndPoint == Mock.Of<TextPoint>() &&
+                                                                   td.StartPoint == 
+                                           Mock.Of<TextPoint>(tp => tp.CreateEditPoint() ==
+                                               Mock.Of<EditPoint>(ep => ep.GetText(td.EndPoint) == ValidConfigXml)))));
 
                 // Act.
-                _underTest.Locate(_project.Object);
+                var connectionString = _underTest.Locate(_project.Object);
 
                 // Assert.
-                appConfigItem.Verify(pi => pi.Save(""), Times.Once());
+                Assert.Equal(@"LOCALHOST\SQLEXPRESS", connectionString.DataSource);
+                Assert.Equal("Test", connectionString.InitialCatalog);
             }
         }
 
@@ -84,8 +94,10 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
                 _underTest.Locate(_project.Object));
         }
 
-        [Fact]
-        public void Test_Locate_No_ConnectionStrings_In_Config_File()
+        [Theory]
+        [InlineData("App.config")]
+        [InlineData("Web.config")]
+        public void Test_Locate_No_ConnectionStrings_In_Config_File(string configName)
         {
             using (var tempConfigFile = new TemporaryFile(
                                                 @"<?xml version='1.0' encoding='utf-8'?>
@@ -93,7 +105,7 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
                                                 </configuration>"))
             {
                 // Arrange.
-                _projectItems.Add(CreateAppConfig(tempConfigFile.File).Object);
+                _projectItems.Add(CreateAppConfig(tempConfigFile.File, configName).Object);
 
                 // Act/Assert.
                 Assert.Throws<ConnectionStringLocationException>(() =>
@@ -101,8 +113,10 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
             }
         }
 
-        [Fact]
-        public void Test_Locate_No_EntityFramework_ConnectionString_In_Config_File()
+        [Theory]
+        [InlineData("App.config")]
+        [InlineData("Web.config")]
+        public void Test_Locate_No_EntityFramework_ConnectionString_In_Config_File(string configName)
         {
             using (var tempConfigFile = new TemporaryFile(
                                                 @"<?xml version='1.0' encoding='utf-8'?>
@@ -111,7 +125,7 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
                                                 </configuration>"))
             {
                 // Arrange.
-                _projectItems.Add(CreateAppConfig(tempConfigFile.File).Object);
+                _projectItems.Add(CreateAppConfig(tempConfigFile.File, configName).Object);
 
                 // Act/Assert.
                 Assert.Throws<ConnectionStringLocationException>(() =>
@@ -119,16 +133,17 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
             }
         }
 
-        private static Mock<ProjectItem> CreateAppConfig(FileInfo configFile, bool hasChanges = false)
+        private static Mock<ProjectItem> CreateAppConfig(FileInfo configFile, string filename, bool hasChanges = false)
         {
-            var appConfigItem = new Mock<ProjectItem> { DefaultValue = DefaultValue.Mock };
-            appConfigItem.SetupGet(pi => pi.ProjectItems)
+            var configItem = new Mock<ProjectItem> { DefaultValue = DefaultValue.Mock };
+            configItem.SetupGet(pi => pi.ProjectItems)
                          .Returns(new Mock<ProjectItems> { DefaultValue = DefaultValue.Mock }.Object);
 
-            appConfigItem.SetupGet(pi => pi.Name).Returns("App.config");
-            appConfigItem.Setup(pi => pi.get_FileNames(0)).Returns(configFile.FullName);
-            appConfigItem.SetupGet(pi => pi.Saved).Returns(!hasChanges);
-            return appConfigItem;
+            configItem.SetupGet(pi => pi.Name).Returns(filename);
+            configItem.Setup(pi => pi.get_FileNames(0)).Returns(configFile.FullName);
+            configItem.SetupGet(pi => pi.Saved).Returns(!hasChanges);
+            configItem.SetupGet(pi => pi.get_IsOpen(It.IsAny<string>())).Returns(hasChanges);
+            return configItem;
         }
 
         private readonly ConnectionStringLocator _underTest = new ConnectionStringLocator();
