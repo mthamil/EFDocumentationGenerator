@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE.txt = LICENSE.txt
 		NOTICE.txt = NOTICE.txt
 		README.md = README.md
+		Visual Studio 2015 Image Library EULA.md = Visual Studio 2015 Image Library EULA.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFDocumentationGenerator.Package", "EFDocumentationGenerator.Package\EFDocumentationGenerator.Package.csproj", "{3B89C2CA-0B02-4DF5-9BAB-7E23C2ADA5F8}"
