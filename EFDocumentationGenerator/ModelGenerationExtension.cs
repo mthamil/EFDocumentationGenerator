@@ -154,9 +154,9 @@ namespace DocumentationGenerator
             }
             catch (ConnectionStringLocationException exception)
             {
-                _logger.Log("Connection string could not be located for project '{0}': {1}.", project.Name, exception.Message);
+                _logger.Log("Connection string could not be located for project '{0}': {1}", project.Name, exception.Message);
                 if (mode == WizardKind.Generate)
-                    _logger.Log("Try updating the model after initial generation and connection string has been saved to App.config.");
+                    _logger.Log("Try updating the model after initial generation and the connection string has been saved to a config file.");
 
                 _logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: Documentation generation failed", DateTime.Now);
                 return;
