@@ -118,7 +118,6 @@
     <Compile Include="ConnectionStrings\ConnectionStringLocationException.cs" />
     <Compile Include="ConnectionStrings\ConnectionStringLocator.cs" />
     <Compile Include="ConnectionStrings\IConnectionStringLocator.cs" />
-    <Compile Include="ConnectionStrings\InnerConnectionStringParser.cs" />
     <Compile Include="Diagnostics\DocGeneratorOutputPaneProvider.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
     <Compile Include="Diagnostics\IOutputPaneProvider.cs" />

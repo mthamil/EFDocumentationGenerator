@@ -15,6 +15,7 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -45,8 +46,11 @@ namespace DocumentationGenerator.ConnectionStrings
 
             using (var configReader = GetConfigReader(configItem))
             {
-                var entityConnString = TryGetConnectionString(configReader, configItem.Name);
-                var connectionString = _innerConnStringParser.Parse(entityConnString);
+                var entityConnString = new DbConnectionStringBuilder
+                {
+                    ConnectionString = TryGetConnectionString(configReader, configItem.Name)
+                };
+                var connectionString = (string)entityConnString[ProviderConnectionStringKey];
                 return new SqlConnectionStringBuilder(connectionString);
             }
         }
@@ -99,9 +103,8 @@ namespace DocumentationGenerator.ConnectionStrings
         private static bool IgnoreCaseEquals(string first, string second) => 
             String.Equals(first, second, StringComparison.OrdinalIgnoreCase);
 
-        private readonly InnerConnectionStringParser _innerConnStringParser = new InnerConnectionStringParser();
-
         private static readonly Regex ConfigNamePattern = new Regex(@"(app|web)\.config", RegexOptions.IgnoreCase);
         private const string EntityProviderName = "System.Data.EntityClient";
+        private const string ProviderConnectionStringKey = "provider connection string";
     }
 }
