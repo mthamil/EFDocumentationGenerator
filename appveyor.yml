@@ -11,8 +11,8 @@
 os: Visual Studio 2017
 
 environment:  
-  major: 1
-  minor: 4
+  major: 2
+  minor: 0
   patch: 0
 
 
@@ -26,6 +26,10 @@ init:
       $Env:VersionPrefix = "$($Env:major).$($Env:minor).$($Env:patch)"
       $Env:VersionSuffix = "$(if ($isCI) { 'CI' + $Env:APPVEYOR_BUILD_NUMBER + $branchSuffix } else { $null })"
       appveyor UpdateBuild -Version "$($Env:VersionPrefix)$(if ($isCI) { '-' } else { $null })$($Env:VersionSuffix)"
+      $manifestPath = (Get-ChildItem .\*Package\*.vsixmanifest).FullName
+      $manifestXml = [xml](Get-Content $manifestPath)
+      $manifestXml.PackageManifest.Metadata.Identity.Version = "$($Env:VersionPrefix).$($Env:APPVEYOR_BUILD_NUMBER)"
+      $manifestXml.Save($manifestPath)
 
 #---------------------------------#
 #       build configuration       #
