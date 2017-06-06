@@ -34,7 +34,7 @@ namespace DocumentationGenerator.ConnectionStrings
     public class ConnectionStringLocator : IConnectionStringLocator
     {
         /// <summary>
-        /// Attempts to find a database connection string in the App.config file of a project.
+        /// Attempts to find a database connection string for a project.
         /// </summary>
         /// <param name="project">The project to search for a connection string</param>
         public SqlConnectionStringBuilder Locate(Project project)
