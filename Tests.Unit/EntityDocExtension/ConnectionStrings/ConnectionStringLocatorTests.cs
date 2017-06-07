@@ -61,6 +61,41 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
         [Theory]
         [InlineData("App.config")]
         [InlineData("Web.config")]
+        public void Test_Locate_When_Multiple_ConnectionStrings(string configName)
+        {
+            using (var tempConfigFile = new TemporaryFile(
+                @"<?xml version='1.0' encoding='utf-8'?>
+                  <configuration>
+                      <connectionStrings>
+                      <add name='TestEntities1'
+                              connectionString='metadata=res://*/TestModel.csdl|res://*/TestModel.ssdl|res://*/TestModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=LOCALHOST\SQLEXPRESS;initial catalog=Test1;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework&quot;'
+                              providerName='System.Data.EntityClient' />
+                      <add name='TestEntities2'
+                              connectionString='metadata=res://*/TestModel.csdl|res://*/TestModel.ssdl|res://*/TestModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=LOCALHOST\SQLEXPRESS;initial catalog=Test2;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework&quot;'
+                              providerName='System.Data.EntityClient' />
+                      </connectionStrings>
+                  </configuration>"))
+            {
+                // Arrange.
+                _project.SetupGet(pi => pi.Saved).Returns(true);
+
+                var configItem = CreateAppConfig(tempConfigFile.File, configName);
+                _projectItems.Add(configItem.Object);
+
+                // Act.
+                var connectionString = _underTest.Locate(_project.Object);
+
+                // Assert.
+                Assert.Equal(@"LOCALHOST\SQLEXPRESS", connectionString.DataSource);
+                Assert.Equal("Test2", connectionString.InitialCatalog);
+                Assert.True(connectionString.IntegratedSecurity);
+                Assert.True(connectionString.MultipleActiveResultSets);
+            }
+        }
+
+        [Theory]
+        [InlineData("App.config")]
+        [InlineData("Web.config")]
         public void Test_Unsaved_Config(string configName)
         {
             using (var tempConfigFile = new TemporaryFile(ValidConfigXml))
