@@ -15,15 +15,14 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.Configuration;
 using System.Data.Common;
 using System.Data.SqlClient;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Xml;
-using System.Xml.Linq;
 using DocumentationGenerator.Utilities;
 using EnvDTE;
+using ConfigurationManager = System.Configuration.ConfigurationManager;
 
 namespace DocumentationGenerator.ConnectionStrings
 {
@@ -44,64 +43,23 @@ namespace DocumentationGenerator.ConnectionStrings
             if (configItem == null)
                 throw new ConnectionStringLocationException("Valid config file could not be found.");
 
-            using (var configReader = GetConfigReader(configItem))
-            {
-                var entityConnString = new DbConnectionStringBuilder
-                {
-                    ConnectionString = TryGetConnectionString(configReader, configItem.Name)
-                };
-                var connectionString = (string)entityConnString[ProviderConnectionStringKey];
-                return new SqlConnectionStringBuilder(connectionString);
-            }
-        }
+            var configFile = new ExeConfigurationFileMap { ExeConfigFilename = configItem.FileNames[0] };
+            var config = ConfigurationManager.OpenMappedExeConfiguration(configFile, ConfigurationUserLevel.None);
+            var connectionStringSettings = config.ConnectionStrings.ConnectionStrings
+                                                 .Cast<ConnectionStringSettings>()
+                                                 .Reverse()
+                                                 .FirstOrDefault(cs => cs.ProviderName == EntityProviderName);
 
-        /// <summary>
-        /// If the config file is unsaved, it probably had a connection string added to it
-        /// and is open in the editor. Retrieve the in-memory contents. Otherwise, read 
-        /// the file from disk.
-        /// </summary>
-        private static XmlReader GetConfigReader(ProjectItem configItem)
-        {
-            if (!configItem.Saved && configItem.IsOpen)
-            {
-                var openDocument = (TextDocument)configItem.Document.Object();
-                var start = openDocument.StartPoint.CreateEditPoint();
-                var text = start.GetText(openDocument.EndPoint);
-                return XmlReader.Create(new StringReader(text), new XmlReaderSettings { CloseInput = true });
-            }
-
-            return XmlReader.Create(File.OpenRead(configItem.FileNames[0]), new XmlReaderSettings { CloseInput = true });
-        }
-
-        /// <summary>
-        /// Searches a config file for an Entity Framework connection string.
-        /// </summary>
-        private static string TryGetConnectionString(XmlReader configReader, string configName)
-        {
-            // Try to find the connection strings section.
-            var config = XDocument.Load(configReader);
-            var connectionStringsElement = config
-                .Elements(XName.Get("configuration")).Single()
-                .Elements(XName.Get("connectionStrings")).ToList();
-
-            if (!connectionStringsElement.Any())
-                throw new ConnectionStringLocationException($"No valid connection strings found in {configName} file.");
-
-            // Try to find the Entity Framework connection string.
-            var entityConnElement = connectionStringsElement
-                .Elements(XName.Get("add"))
-                .FirstOrDefault(element =>
-                    IgnoreCaseEquals(element.Attribute("providerName")?.Value, EntityProviderName));
-
-            if (entityConnElement == null)
+            if (connectionStringSettings == null)
                 throw new ConnectionStringLocationException($"Connection string for provider '{EntityProviderName}' not found.");
 
-            // Parse the connection string.
-            return entityConnElement.Attribute("connectionString").Value;
+            var entityConnString = new DbConnectionStringBuilder
+            {
+                ConnectionString = connectionStringSettings.ConnectionString
+            };
+            var connectionString = (string)entityConnString[ProviderConnectionStringKey];
+            return new SqlConnectionStringBuilder(connectionString);
         }
-
-        private static bool IgnoreCaseEquals(string first, string second) => 
-            String.Equals(first, second, StringComparison.OrdinalIgnoreCase);
 
         private static readonly Regex ConfigNamePattern = new Regex(@"(app|web)\.config", RegexOptions.IgnoreCase);
         private const string EntityProviderName = "System.Data.EntityClient";
