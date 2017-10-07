@@ -24,17 +24,30 @@ namespace DocumentationGenerator.Utilities
 	/// </summary>
 	internal static class XContainerExtensions
 	{
-		/// <summary>
-		/// Provides access to edm schema XML namespace-specific operations.
-		/// </summary>
-		public static INamespacedOperations Edm(this XContainer element) => new NamespacedOperations(element, EdmNamespace);
+        private const string SsdlNamespace = "http://schemas.microsoft.com/ado/2009/11/edm/ssdl";
+        private const string EdmNamespace = "http://schemas.microsoft.com/ado/2009/11/edm";
+        private const string CsNamespace = "http://schemas.microsoft.com/ado/2009/11/mapping/cs";
 
-	    private const string EdmNamespace = "http://schemas.microsoft.com/ado/2009/11/edm";
+        /// <summary>
+        /// Provides access to Storage Model (SSDL) schema XML namespace-specific operations.
+        /// </summary>
+        public static INamespacedOperations Ssdl(this XContainer element) => new NamespacedOperations(element, SsdlNamespace);
 
-		/// <summary>
-		/// Provides access to XML namespace-specific operations.
-		/// </summary>
-		public interface INamespacedOperations
+        /// <summary>
+        /// Provides access to Conceptual Model (EDM) schema XML namespace-specific operations.
+        /// </summary>
+        public static INamespacedOperations Edm(this XContainer element) => new NamespacedOperations(element, EdmNamespace);
+
+        /// <summary>
+        /// Provides access to Conceptual-Storage Mapping schema XML namespace-specific operations.
+        /// </summary>
+        public static INamespacedOperations Cs(this XContainer element) => new NamespacedOperations(element, CsNamespace);
+
+
+        /// <summary>
+        /// Provides access to XML namespace-specific operations.
+        /// </summary>
+        public interface INamespacedOperations
 		{
 			/// <summary>
 			/// Returns the Descendant <see cref="XElement"/>s with the passed in names from the EDM namespace 
@@ -91,8 +104,8 @@ namespace DocumentationGenerator.Utilities
 		    /// <see cref="INamespacedOperations.Elements"/>
 			public IEnumerable<XElement> Elements(string name) => _element.Elements(XName.Get(name, Namespace));
 
-		    /// <see cref="INamespacedOperations.Namespace"/>
-			public string Namespace { get; }
+            /// <see cref="INamespacedOperations.Namespace"/>
+            public string Namespace { get; }
 
 			private readonly XContainer _element;
 		}

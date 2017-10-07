@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <edmx:Runtime>
+    <edmx:ConceptualModels>
+      <Schema Namespace="TestModel" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation"
+                                    xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation"
+                                    xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="TestModelEntities">
+          <EntitySet Name="FirstTable" EntityType="TestModel.FirstTable" />
+          <EntitySet Name="SecondTables" EntityType="TestModel.SecondTable" />
+          <AssociationSet Name="FK_FirstTable_Order_FirstTableID" Association="TestModel.FK_FirstTable_Order_FirstTableID"/>
+        </EntityContainer>
+        <EntityType Name="FirstTable">
+          <Key>
+            <PropertyRef Name="FirstTableID" />
+          </Key>
+          <Property Name="FirstTableID" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity"/>
+          <Property Name="DateTimeColumn" Type="DateTime" Nullable="false"/>
+        </EntityType>
+        <EntityType Name="SecondTable">
+          <Key>
+            <PropertyRef Name="SecondTableID" />
+          </Key>
+          <Property Name="SecondTableID" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity"/>
+          <Property Name="StringColumn" Type="String" Nullable="false"/>
+          <Property Name="IntegerColumn" Type="Int32"/>
+          <NavigationProperty Name="FirstTable" Relationship="TestModel.FK_FirstTable_Order_FirstTableID"/>
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="TestModelsStoreContainer" CdmEntityContainer="TestModelEntities">
+          <EntitySetMapping Name="FirstTable">
+            <EntityTypeMapping TypeName="TestModel.FirstTable">
+              <MappingFragment StoreEntitySet="FirstTable">
+                <ScalarProperty Name="FirstTableID" ColumnName="FirstTableID" />
+                <ScalarProperty Name="DateTimeColumn" ColumnName="DateTimeColumn" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SecondTables">
+            <EntityTypeMapping TypeName="TestModel.SecondTable">
+              <MappingFragment StoreEntitySet="SecondTables">
+                <ScalarProperty Name="SecondTableID" ColumnName="SecondTableID" />
+                <ScalarProperty Name="StringColumn" ColumnName="StringColumn" />
+                <ScalarProperty Name="IntegerColumn" ColumnName="IntegerColumn" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+</edmx:Edmx>

@@ -20,89 +20,104 @@ using DocumentationGenerator.Utilities;
 
 namespace DocumentationGenerator
 {
-	/// <summary>
-	/// Updates XML EDMX file documentation nodes.
-	/// </summary>
-	internal class ModelDocumentationUpdater : IModelDocumentationUpdater
-	{
-		/// <summary>
-		/// Initializes a new <see cref="ModelDocumentationUpdater"/>.
-		/// </summary>
-		/// <param name="documentationSource">The documentation source</param>
-		public ModelDocumentationUpdater(IDocumentationSource documentationSource)
-		{
-			_documentationSource = documentationSource;
-		}
+    /// <summary>
+    /// Updates XML EDMX file documentation nodes.
+    /// </summary>
+    internal class ModelDocumentationUpdater : IModelDocumentationUpdater
+    {
+        /// <summary>
+        /// Initializes a new <see cref="ModelDocumentationUpdater"/>.
+        /// </summary>
+        /// <param name="documentationSource">The documentation source</param>
+        public ModelDocumentationUpdater(IDocumentationSource documentationSource)
+        {
+            _documentationSource = documentationSource;
+        }
 
-		/// <summary>
-		/// Iterates over the entities in the conceptual model and attempts to populate
-		/// their documentation nodes with values from the database.
-		/// Existing documentation will be removed and replaced by database content.
-		/// </summary>
-		/// <param name="modelDocument">An .edmx XML document to update</param>
-		public void UpdateDocumentation(XDocument modelDocument)
-		{
-			_namespace = modelDocument.Edm().Namespace;
+        /// <summary>
+        /// Iterates over the entities in the conceptual model and attempts to populate
+        /// their documentation nodes with values from the database.
+        /// Existing documentation will be removed and replaced by database content.
+        /// </summary>
+        /// <param name="modelDocument">An .edmx XML document to update</param>
+        public void UpdateDocumentation(XDocument modelDocument)
+        {
+            var conceptualModel = modelDocument.Edm();
+            var conceptualTypeNamespace = conceptualModel.Descendants("Schema")
+                                                         .Single()
+                                                         .Attribute("Namespace").Value;
 
-			var entityTypeElements = modelDocument.Edm().Descendants("EntityType").ToList();
-			foreach (var entityType in entityTypeElements)
-			{
-				string tableName = entityType.Attribute("Name").Value;
-				UpdateNodeDocumentation(entityType, _documentationSource.GetDocumentation(tableName));
+            // The conceptual model entity type that is being mapped is specified by the
+            // TypeName attribute of the EntityTypeMapping element. The table or view 
+            // that is being mapped is specified by the StoreEntitySet attribute of the 
+            // child MappingFragment element.
+            var mappings = modelDocument.Cs().Descendants("EntitySetMapping")
+                                             .Select(es => es.Cs().Element("EntityTypeMapping"))
+                                             .ToDictionary(et => et.Attribute("TypeName").Value, 
+                                                           et => et.Cs().Element("MappingFragment")
+                                                                        .Attribute("StoreEntitySet").Value);
 
-				var properties =
-						entityType.Edm().Descendants("Property")
-								  .Select(e => new
-								  {
-									  Element = e,
-									  Property = new EntityProperty(
-												   e.Attribute("Name").Value,
-												   EntityPropertyType.Property)
-								  })
-					.Concat(
-						entityType.Edm().Descendants("NavigationProperty")
-								  .Select(e => new
-								  {
-									  Element = e,
-									  Property = CreateNavProperty(e, modelDocument)
-								  }));
+            foreach (var entityType in conceptualModel.Descendants("EntityType").ToList())
+            {
+                var conceptualName = entityType.Attribute("Name").Value;
 
-				foreach (var property in properties)
-				{
-					UpdateNodeDocumentation(property.Element, 
-						_documentationSource.GetDocumentation(tableName, property.Property));
-				}
-			}
-		}
+                if (!mappings.TryGetValue($"{conceptualTypeNamespace}.{conceptualName}", out var storageName))
+                    continue;
 
-		private void UpdateNodeDocumentation(XContainer element, string documentation)
-		{
-			if (String.IsNullOrWhiteSpace(documentation))
-				return;
+                UpdateNodeDocumentation(entityType, conceptualModel.Namespace, 
+                    _documentationSource.GetDocumentation(storageName));
 
-			var fixedDocumentation = documentation.Trim();
+                var properties =
+                        entityType.Edm().Descendants("Property")
+                                  .Select(e => new
+                                  {
+                                      Element = e,
+                                      Property = new EntityProperty(
+                                                   e.Attribute("Name").Value,
+                                                   EntityPropertyType.Property)
+                                  })
+                    .Concat(
+                        entityType.Edm().Descendants("NavigationProperty")
+                                  .Select(e => new
+                                  {
+                                      Element = e,
+                                      Property = CreateNavProperty(e, modelDocument)
+                                  }));
 
-			// Remove existing documentation.
-			element.Edm().Descendants("Documentation").Remove();
+                foreach (var property in properties)
+                {
+                    UpdateNodeDocumentation(property.Element, conceptualModel.Namespace,
+                        _documentationSource.GetDocumentation(storageName, property.Property));
+                }
+            }
+        }
 
-			element.AddFirst(new XElement(XName.Get("Documentation", _namespace),
-										  new XElement(XName.Get("Summary", _namespace), fixedDocumentation)));
-		}
+        private static void UpdateNodeDocumentation(XContainer element, string edmNamespace, string documentation)
+        {
+            if (String.IsNullOrWhiteSpace(documentation))
+                return;
 
-		private static EntityProperty CreateNavProperty(XElement element, XContainer document)
-		{
-			var relationship = element.Attribute("Relationship").Value;
-			var association = document.Edm()
-				.Descendants("AssociationSet")
-				.Single(ae => ae.Attribute("Association").Value == relationship);
+            var fixedDocumentation = documentation.Trim();
 
-			return new EntityProperty(
-				association.Attribute("Name").Value,
-				EntityPropertyType.NavigationProperty);
-		}
+            // Remove existing documentation.
+            element.Edm().Descendants("Documentation").Remove();
 
-		private string _namespace;
+            element.AddFirst(new XElement(XName.Get("Documentation", edmNamespace),
+                                          new XElement(XName.Get("Summary", edmNamespace), fixedDocumentation)));
+        }
 
-		private readonly IDocumentationSource _documentationSource;
-	}
+        private static EntityProperty CreateNavProperty(XElement element, XContainer document)
+        {
+            var relationship = element.Attribute("Relationship").Value;
+            var association = document.Edm()
+                .Descendants("AssociationSet")
+                .Single(ae => ae.Attribute("Association").Value == relationship);
+
+            return new EntityProperty(
+                association.Attribute("Name").Value,
+                EntityPropertyType.NavigationProperty);
+        }
+
+        private readonly IDocumentationSource _documentationSource;
+    }
 }
