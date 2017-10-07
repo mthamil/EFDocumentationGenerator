@@ -22,7 +22,8 @@ using System.Collections.Generic;
 namespace DocumentationGenerator
 {
     /// <summary>
-    /// Represents the contents of an EDMX file.
+    /// Represents the contents of an EDMX file. It is essentially a wrapper
+    /// around an EDMX file.
     /// </summary>
     public class EntityDataModel
     {
