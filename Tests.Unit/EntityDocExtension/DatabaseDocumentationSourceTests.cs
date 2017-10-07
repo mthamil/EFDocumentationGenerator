@@ -15,7 +15,7 @@ namespace Tests.Unit.EntityDocExtension
 		    _connection.Setup(c => c.CreateCommand())
 		               .Returns(_command.Object);
 
-			_underTest = new DatabaseDocumentationSource("connectionString", _ => _connection.Object);
+			_underTest = new DatabaseDocumentationSource(_connection.Object);
 		}
 
 		[Fact]
