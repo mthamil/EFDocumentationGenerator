@@ -19,10 +19,53 @@ using System.Xml.Linq;
 
 namespace DocumentationGenerator.Utilities
 {
-	/// <summary>
-	/// Provides extension methods for <see cref="XElement"/>s.
-	/// </summary>
-	internal static class XContainerExtensions
+    /// <summary>
+    /// Provides access to XML namespace-specific operations.
+    /// </summary>
+    public interface INamespacedOperations
+    {
+        /// <summary>
+        /// Returns the Descendant <see cref="XElement"/>s with the passed in names from the EDM namespace 
+        /// as an <see cref="IEnumerable{XElement}"/>
+        /// </summary> 
+        /// <param name="name">The name to match against descendant <see cref="XElement"/>s.</param>
+        /// <returns>An <see cref="IEnumerable"/> of <see cref="XElement"/></returns> 
+        IEnumerable<XElement> Descendants(string name);
+
+        /// <summary>
+        /// Returns the child element with the specified name or null if there is no matching child element. 
+        /// <seealso cref="XContainer.Elements()"/>
+        /// </summary> 
+        /// <param name="name"> 
+        /// The element name to match against this <see cref="XContainer"/>'s child elements.
+        /// </param> 
+        /// <returns>
+        /// An <see cref="XElement"/> child that matches the name passed in, or null.
+        /// </returns>
+        XElement Element(string name);
+
+        /// <summary>
+        /// Returns the child elements of an <see cref="XContainer"/> that match the name passed in.
+        /// </summary> 
+        /// <param name="name">
+        /// The element name to match against the <see cref="XElement"/> children of this <see cref="XContainer"/>. 
+        /// </param> 
+        /// <returns>
+        /// An <see cref="IEnumerable"/> of <see cref="XElement"/> children of this <see cref="XContainer"/> that have 
+        /// a matching name.
+        /// </returns>
+        IEnumerable<XElement> Elements(string name);
+
+        /// <summary>
+        /// The XML namespace a set of operations are for.
+        /// </summary>
+        string Namespace { get; }
+    }
+
+    /// <summary>
+    /// Provides extension methods for <see cref="XElement"/>s.
+    /// </summary>
+    internal static class XContainerExtensions
 	{
         private const string SsdlNamespace = "http://schemas.microsoft.com/ado/2009/11/edm/ssdl";
         private const string EdmNamespace = "http://schemas.microsoft.com/ado/2009/11/edm";
@@ -42,50 +85,6 @@ namespace DocumentationGenerator.Utilities
         /// Provides access to Conceptual-Storage Mapping schema XML namespace-specific operations.
         /// </summary>
         public static INamespacedOperations Cs(this XContainer element) => new NamespacedOperations(element, CsNamespace);
-
-
-        /// <summary>
-        /// Provides access to XML namespace-specific operations.
-        /// </summary>
-        public interface INamespacedOperations
-		{
-			/// <summary>
-			/// Returns the Descendant <see cref="XElement"/>s with the passed in names from the EDM namespace 
-			/// as an <see cref="IEnumerable{XElement}"/>
-			/// </summary> 
-			/// <param name="name">The name to match against descendant <see cref="XElement"/>s.</param>
-			/// <returns>An <see cref="IEnumerable"/> of <see cref="XElement"/></returns> 
-			IEnumerable<XElement> Descendants(string name);
-
-			/// <summary>
-			/// Returns the child element with the specified name or null if there is no matching child element. 
-			/// <seealso cref="XContainer.Elements()"/>
-			/// </summary> 
-			/// <param name="name"> 
-			/// The element name to match against this <see cref="XContainer"/>'s child elements.
-			/// </param> 
-			/// <returns>
-			/// An <see cref="XElement"/> child that matches the name passed in, or null.
-			/// </returns>
-			XElement Element(string name);
-
-			/// <summary>
-			/// Returns the child elements of an <see cref="XContainer"/> that match the name passed in.
-			/// </summary> 
-			/// <param name="name">
-			/// The element name to match against the <see cref="XElement"/> children of this <see cref="XContainer"/>. 
-			/// </param> 
-			/// <returns>
-			/// An <see cref="IEnumerable"/> of <see cref="XElement"/> children of this <see cref="XContainer"/> that have 
-			/// a matching name.
-			/// </returns>
-			IEnumerable<XElement> Elements(string name);
-
-			/// <summary>
-			/// The XML namespace a set of operations are for.
-			/// </summary>
-			string Namespace { get; }
-		}
 
 		private class NamespacedOperations : INamespacedOperations
 		{

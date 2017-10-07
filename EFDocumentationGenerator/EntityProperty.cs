@@ -13,32 +13,61 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
+using DocumentationGenerator.Utilities;
+using System;
+using System.Xml.Linq;
+
 namespace DocumentationGenerator
 {
-	/// <summary>
-	/// Represents an entity property.
-	/// </summary>
-	public class EntityProperty
-	{
-		/// <summary>
-		/// Initializes a new <see cref="EntityProperty"/>.
-		/// </summary>
-		/// <param name="name">The property name</param>
-		/// <param name="type">The property type</param>
-		public EntityProperty(string name, EntityPropertyType type)
-		{
-			Name = name;
-			Type = type;
-		}
+    /// <summary>
+    /// Represents an entity property.
+    /// </summary>
+    public class EntityProperty
+    {
+        private readonly INamespacedOperations _conceptualModel;
+        private readonly XElement _element;
 
-		/// <summary>
-		/// The property name.
-		/// </summary>
-		public string Name { get; }
+        /// <summary>
+        /// Initializes a new <see cref="EntityProperty"/>.
+        /// </summary>
+        /// <param name="conceptualModel">The model a property belongs to.</param>
+        /// <param name="element">The backing property element.</param>
+        /// <param name="name">The property name.</param>
+        /// <param name="type">The property type.</param>
+        public EntityProperty(INamespacedOperations conceptualModel, XElement element, string name, EntityPropertyType type)
+        {
+            _conceptualModel = conceptualModel ?? throw new ArgumentNullException(nameof(conceptualModel));
+            _element = element;
+            Name = name;
+            Type = type;
+        }
 
-		/// <summary>
-		/// The property type.
-		/// </summary>
-		public EntityPropertyType Type { get; }
-	}
+        /// <summary>
+        /// The property name.
+        /// </summary>
+        public string Name { get; }
+
+        /// <summary>
+        /// The property type.
+        /// </summary>
+        public EntityPropertyType Type { get; }
+
+        /// <summary>
+        /// Updates the documentation for a property.
+        /// </summary>
+        /// <param name="documentation"></param>
+        public void UpdateDocumentation(string documentation)
+        {
+            if (documentation == null)
+                return;
+
+            var fixedDocumentation = documentation.Trim();
+
+            // Remove existing documentation.
+            _element.Edm().Descendants("Documentation").Remove();
+
+            _element.AddFirst(new XElement(XName.Get("Documentation", _conceptualModel.Namespace),
+                                           new XElement(XName.Get("Summary", _conceptualModel.Namespace), fixedDocumentation)));
+        }
+    }
 }

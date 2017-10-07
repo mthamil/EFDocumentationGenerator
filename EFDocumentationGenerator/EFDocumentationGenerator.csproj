@@ -125,8 +125,10 @@
     <Compile Include="Diagnostics\IOutputPaneProvider.cs" />
     <Compile Include="Diagnostics\OutputPaneProvider.cs" />
     <Compile Include="Diagnostics\OutputWindowLogger.cs" />
+    <Compile Include="EntityDataModel.cs" />
     <Compile Include="EntityProperty.cs" />
     <Compile Include="EntityPropertyType.cs" />
+    <Compile Include="EntityType.cs" />
     <Compile Include="EnvDTEConstants.cs" />
     <Compile Include="ErrorListAdapter.cs" />
     <Compile Include="IModelDocumentationUpdater.cs" />
