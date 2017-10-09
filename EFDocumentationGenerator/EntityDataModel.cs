@@ -48,11 +48,14 @@ namespace DocumentationGenerator
             // that is being mapped is specified by the StoreEntitySet attribute of the 
             // child MappingFragment element.
             _mappings = edmxDocument.Cs().Descendants("EntitySetMapping")
-                                         .Select(es => es.Cs().Element("EntityTypeMapping"))
-                                         .ToDictionary(et => et.Attribute("TypeName").Value,
+                                         .SelectMany(es => es.Cs().Elements("EntityTypeMapping"))
+                                         .ToDictionary(et => Sanitize(et.Attribute("TypeName").Value),
                                                        et => et.Cs().Element("MappingFragment")
                                                                     .Attribute("StoreEntitySet").Value);
         }
+
+        private static string Sanitize(string typeName) => typeName.Replace("IsTypeOf(", string.Empty)
+                                                                   .Replace(")", string.Empty);
 
         /// <summary>
         /// The entities in the conceptual data model.
