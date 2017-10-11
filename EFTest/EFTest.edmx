@@ -29,18 +29,6 @@
           <Property Name="Description" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="IsEnabled" Type="bit" Nullable="false" />
         </EntityType>
-        <Association Name="FK_Children_Item">
-          <End Role="Items" Type="Self.Items" Multiplicity="1" />
-          <End Role="Children" Type="Self.Children" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Items">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Children">
-              <PropertyRef Name="ItemId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Children_DerivedChildren">
           <End Role="Children" Type="Self.Children" Multiplicity="1" />
           <End Role="DerivedChildren" Type="Self.DerivedChildren" Multiplicity="0..1" />
@@ -53,17 +41,29 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Children_Items">
+          <End Role="Items" Type="Self.Items" Multiplicity="1" />
+          <End Role="Children" Type="Self.Children" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Items">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Children">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="EFTestModelsStoreContainer">
           <EntitySet Name="Children" EntityType="Self.Children" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DerivedChildren" EntityType="Self.DerivedChildren" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Items" EntityType="Self.Items" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK_Children_Item" Association="Self.FK_Children_Item">
-            <End Role="Items" EntitySet="Items" />
-            <End Role="Children" EntitySet="Children" />
-          </AssociationSet>
           <AssociationSet Name="FK_Children_DerivedChildren" Association="Self.FK_Children_DerivedChildren">
             <End Role="Children" EntitySet="Children" />
             <End Role="DerivedChildren" EntitySet="DerivedChildren" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Children_Items" Association="Self.FK_Children_Items">
+            <End Role="Items" EntitySet="Items" />
+            <End Role="Children" EntitySet="Children" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
