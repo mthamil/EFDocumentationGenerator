@@ -93,6 +93,7 @@
     <Compile Include="EntityDocExtension\DatabaseDocumentationSourceTests.cs" />
     <Compile Include="EntityDocExtension\Diagnostics\OutputPaneProviderTests.cs" />
     <Compile Include="EntityDocExtension\Diagnostics\OutputWindowLoggerTests.cs" />
+    <Compile Include="EntityDocExtension\EdmxFixture.cs" />
     <Compile Include="EntityDocExtension\ModelDocumentationUpdaterTests.cs" />
     <Compile Include="EntityDocExtension\ModelGenerationExtensionTests.cs" />
     <Compile Include="ErrorListAdapterTests.cs" />
@@ -113,6 +114,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="EntityDocExtension\TestModel.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

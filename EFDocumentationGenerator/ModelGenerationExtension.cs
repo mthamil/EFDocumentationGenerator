@@ -45,8 +45,8 @@ namespace DocumentationGenerator
         public ModelGenerationExtension(ILogger logger, IConnectionStringLocator connectionStringLocator, IReadOnlyList<ErrorItem> errorList)
             : this(logger,
                    connectionStringLocator,
-                   connectionString => new DatabaseDocumentationSource(connectionString),
-                   source => new ModelDocumentationUpdater(source), 
+                   connectionString => new DatabaseDocumentationSource(new SqlConnection(connectionString)),
+                   source => new ModelDocumentationUpdater(source),
                    errorList)
         {
         }

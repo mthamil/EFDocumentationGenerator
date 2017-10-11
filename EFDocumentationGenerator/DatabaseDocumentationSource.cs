@@ -27,20 +27,10 @@ namespace DocumentationGenerator
         /// <summary>
         /// Initializes a new <see cref="DatabaseDocumentationSource"/>.
         /// </summary>
-        /// <param name="connectionString">The database connection string</param>
-        public DatabaseDocumentationSource(string connectionString)
-            : this(connectionString, cs => new SqlConnection(cs))
+        /// <param name="connection">The database connection.</param>
+        public DatabaseDocumentationSource(IDbConnection connection)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new <see cref="DatabaseDocumentationSource"/>.
-        /// </summary>
-        /// <param name="connectionString">The database connection string</param>
-        /// <param name="connectionFactory">Creates database connections from a connection string</param>
-        public DatabaseDocumentationSource(string connectionString, Func<string, IDbConnection> connectionFactory)
-        {
-            _connection = connectionFactory(connectionString);
+            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
             _connection.Open();
         }
 
@@ -79,7 +69,7 @@ namespace DocumentationGenerator
             }
         }
 
-        private static string GetSecondLevelType(EntityPropertyType propertyType) => 
+        private static string GetSecondLevelType(EntityPropertyType propertyType) =>
             propertyType == EntityPropertyType.Property ? "'column'" : "'constraint'";
 
         private readonly IDbConnection _connection;

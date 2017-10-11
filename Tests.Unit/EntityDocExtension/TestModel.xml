@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <edmx:Runtime>
+    <edmx:ConceptualModels>
+      <Schema Namespace="TestModel" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation"
+                                    xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation"
+                                    xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        
+        <EntityContainer Name="TestModelEntities">
+          <EntitySet Name="Parent" EntityType="TestModel.Parent" />
+          <EntitySet Name="Children" EntityType="TestModel.Child" />
+          <AssociationSet Name="FK_Children_ParentId" Association="TestModel.FK_Children_ParentId">
+            <End Role="Parent" EntitySet="Parent" />
+            <End Role="Child" EntitySet="Children" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Children_DerivedChildren" Association="TestModel.FK_Children_DerivedChildren">
+            <End Role="Child" EntitySet="Children" />
+            <End Role="DerivedChild" EntitySet="Children" />
+          </AssociationSet>
+        </EntityContainer>
+        
+        <EntityType Name="Parent">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" Unicode="true" />
+          <NavigationProperty Name="Children" Relationship="TestModel.FK_Children_ParentId" FromRole="Parent" ToRole="Child" />
+        </EntityType>
+          
+        <EntityType Name="Child">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" Unicode="true" />
+          <Property Name="ParentId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Parent" Relationship="TestModel.FK_Children_ParentId" FromRole="Child" ToRole="Parent" />
+          <NavigationProperty Name="DerivedChild" Relationship="TestModel.FK_Children_DerivedChildren" FromRole="Child" ToRole="DerivedChild" />
+        </EntityType>
+        
+        <EntityType Name="DerivedChild" BaseType="TestModel.Child">
+          <Property Name="Description" Type="String" Nullable="false" Unicode="true" />
+          <NavigationProperty Name="Child" Relationship="TestModel.FK_Children_DerivedChildren" FromRole="DerivedChild" ToRole="Child" />
+        </EntityType>
+      
+      </Schema>
+    </edmx:ConceptualModels>
+    <edmx:Mappings>     
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="TestModelStoreContainer" CdmEntityContainer="TestModelEntities">
+          
+          <EntitySetMapping Name="Children">
+            <EntityTypeMapping TypeName="IsTypeOf(TestModel.Child)">
+              <MappingFragment StoreEntitySet="Children">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="IsTypeOf(TestModel.DerivedChild)">
+              <MappingFragment StoreEntitySet="DerivedChildren">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          
+          <EntitySetMapping Name="Parent">
+            <EntityTypeMapping TypeName="TestModel.Parent">
+              <MappingFragment StoreEntitySet="Parent">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+</edmx:Edmx>

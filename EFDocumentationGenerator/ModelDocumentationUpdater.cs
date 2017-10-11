@@ -13,96 +13,46 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-using System;
-using System.Linq;
 using System.Xml.Linq;
-using DocumentationGenerator.Utilities;
 
 namespace DocumentationGenerator
 {
-	/// <summary>
-	/// Updates XML EDMX file documentation nodes.
-	/// </summary>
-	internal class ModelDocumentationUpdater : IModelDocumentationUpdater
-	{
-		/// <summary>
-		/// Initializes a new <see cref="ModelDocumentationUpdater"/>.
-		/// </summary>
-		/// <param name="documentationSource">The documentation source</param>
-		public ModelDocumentationUpdater(IDocumentationSource documentationSource)
-		{
-			_documentationSource = documentationSource;
-		}
+    /// <summary>
+    /// Updates XML EDMX file documentation nodes.
+    /// </summary>
+    internal class ModelDocumentationUpdater : IModelDocumentationUpdater
+    {
+        /// <summary>
+        /// Initializes a new <see cref="ModelDocumentationUpdater"/>.
+        /// </summary>
+        /// <param name="documentationSource">The documentation source</param>
+        public ModelDocumentationUpdater(IDocumentationSource documentationSource)
+        {
+            _documentationSource = documentationSource;
+        }
 
-		/// <summary>
-		/// Iterates over the entities in the conceptual model and attempts to populate
-		/// their documentation nodes with values from the database.
-		/// Existing documentation will be removed and replaced by database content.
-		/// </summary>
-		/// <param name="modelDocument">An .edmx XML document to update</param>
-		public void UpdateDocumentation(XDocument modelDocument)
-		{
-			_namespace = modelDocument.Edm().Namespace;
+        /// <summary>
+        /// Iterates over the entities in the conceptual model and attempts to populate
+        /// their documentation nodes with values from the database.
+        /// Existing documentation will be removed and replaced by database content.
+        /// </summary>
+        /// <param name="modelDocument">An .edmx XML document to update</param>
+        public void UpdateDocumentation(XDocument modelDocument)
+        {
+            var dataModel = new EntityDataModel(modelDocument);
+            foreach (var entity in dataModel.Entities)
+            {
+                var entityDocumentation = _documentationSource.GetDocumentation(entity.StorageName);
+                entity.UpdateDocumentation(entityDocumentation);
 
-			var entityTypeElements = modelDocument.Edm().Descendants("EntityType").ToList();
-			foreach (var entityType in entityTypeElements)
-			{
-				string tableName = entityType.Attribute("Name").Value;
-				UpdateNodeDocumentation(entityType, _documentationSource.GetDocumentation(tableName));
+                foreach (var property in entity.Properties)
+                {
+                    var propertyDocumentation = _documentationSource.GetDocumentation(entity.StorageName, property);
+                    property.UpdateDocumentation(propertyDocumentation);
+                }
+            }
+        }
 
-				var properties =
-						entityType.Edm().Descendants("Property")
-								  .Select(e => new
-								  {
-									  Element = e,
-									  Property = new EntityProperty(
-												   e.Attribute("Name").Value,
-												   EntityPropertyType.Property)
-								  })
-					.Concat(
-						entityType.Edm().Descendants("NavigationProperty")
-								  .Select(e => new
-								  {
-									  Element = e,
-									  Property = CreateNavProperty(e, modelDocument)
-								  }));
-
-				foreach (var property in properties)
-				{
-					UpdateNodeDocumentation(property.Element, 
-						_documentationSource.GetDocumentation(tableName, property.Property));
-				}
-			}
-		}
-
-		private void UpdateNodeDocumentation(XContainer element, string documentation)
-		{
-			if (String.IsNullOrWhiteSpace(documentation))
-				return;
-
-			var fixedDocumentation = documentation.Trim();
-
-			// Remove existing documentation.
-			element.Edm().Descendants("Documentation").Remove();
-
-			element.AddFirst(new XElement(XName.Get("Documentation", _namespace),
-										  new XElement(XName.Get("Summary", _namespace), fixedDocumentation)));
-		}
-
-		private static EntityProperty CreateNavProperty(XElement element, XContainer document)
-		{
-			var relationship = element.Attribute("Relationship").Value;
-			var association = document.Edm()
-				.Descendants("AssociationSet")
-				.Single(ae => ae.Attribute("Association").Value == relationship);
-
-			return new EntityProperty(
-				association.Attribute("Name").Value,
-				EntityPropertyType.NavigationProperty);
-		}
-
-		private string _namespace;
-
-		private readonly IDocumentationSource _documentationSource;
-	}
+        private readonly IDocumentationSource _documentationSource;
+    }
 }
