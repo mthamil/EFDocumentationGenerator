@@ -59,7 +59,8 @@
     <Folder Include="Properties" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Item.sql" />
-    <Build Include="Child.sql" />
+    <Build Include="Items.sql" />
+    <Build Include="Children.sql" />
+    <Build Include="DerivedChildren.sql" />
   </ItemGroup>
 </Project>
