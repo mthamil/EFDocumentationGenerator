@@ -5,10 +5,13 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="809f968a288040bd826691dfd82ca2b7" Name="Diagram1">
-        <EntityTypeShape EntityType="EFTestModels.Item" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="EFTestModels.Child" Width="1.5" PointX="3" PointY="0.875" />
-        <AssociationConnector Association="EFTestModels.FK_Child_Item" />
-      </Diagram>
+        <EntityTypeShape EntityType="EFTestModels.Child" Width="1.5" PointX="3" PointY="1" />
+        <EntityTypeShape EntityType="EFTestModels.Item" Width="1.5" PointX="0.75" PointY="0.875" />
+        <AssociationConnector Association="EFTestModels.FK_Children_Item" />
+        <EntityTypeShape EntityType="EFTestModels.DerivedChild" Width="1.5" PointX="5.25" PointY="1.25" />
+        <AssociationConnector Association="EFTestModels.FK_Children_OtherChildren" />
+        <InheritanceConnector EntityType="EFTestModels.DerivedChild" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

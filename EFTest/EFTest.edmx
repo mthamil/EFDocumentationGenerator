@@ -5,7 +5,7 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="EFTestModels.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="Child">
+        <EntityType Name="Children">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -13,7 +13,14 @@
           <Property Name="Name" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="ItemId" Type="int" Nullable="false" />
         </EntityType>
-        <EntityType Name="Item">
+        <EntityType Name="DerivedChildren">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Items">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -22,31 +29,60 @@
           <Property Name="Description" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="IsEnabled" Type="bit" Nullable="false" />
         </EntityType>
-        <Association Name="FK_Child_Item">
-          <End Role="Item" Type="Self.Item" Multiplicity="1" />
-          <End Role="Child" Type="Self.Child" Multiplicity="*" />
+        <Association Name="FK_Children_Item">
+          <End Role="Items" Type="Self.Items" Multiplicity="1" />
+          <End Role="Children" Type="Self.Children" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Item">
+            <Principal Role="Items">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Child">
+            <Dependent Role="Children">
               <PropertyRef Name="ItemId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Children_DerivedChildren">
+          <End Role="Children" Type="Self.Children" Multiplicity="1" />
+          <End Role="DerivedChildren" Type="Self.DerivedChildren" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Children">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="DerivedChildren">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="EFTestModelsStoreContainer">
-          <EntitySet Name="Child" EntityType="Self.Child" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Item" EntityType="Self.Item" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK_Child_Item" Association="Self.FK_Child_Item">
-            <End Role="Item" EntitySet="Item" />
-            <End Role="Child" EntitySet="Child" />
+          <EntitySet Name="Children" EntityType="Self.Children" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DerivedChildren" EntityType="Self.DerivedChildren" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Items" EntityType="Self.Items" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Children_Item" Association="Self.FK_Children_Item">
+            <End Role="Items" EntitySet="Items" />
+            <End Role="Children" EntitySet="Children" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Children_DerivedChildren" Association="Self.FK_Children_DerivedChildren">
+            <End Role="Children" EntitySet="Children" />
+            <End Role="DerivedChildren" EntitySet="DerivedChildren" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="EFTestModels" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="Item">
+        <EntityContainer Name="EFTestEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Items" EntityType="EFTestModels.Item" />
+          <EntitySet Name="Children" EntityType="EFTestModels.Child" />
+          <AssociationSet Name="FK_Children_Item" Association="EFTestModels.FK_Children_Item">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="Child" EntitySet="Children" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Children_DerivedChildren" Association="EFTestModels.FK_Children_DerivedChildren">
+            <End Role="Child" EntitySet="Children" />
+            <End Role="DerivedChildren" EntitySet="Children" />
+          </AssociationSet>
+          </EntityContainer>
+		    <EntityType Name="Item">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -54,16 +90,8 @@
           <Property Name="Name" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="IsEnabled" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Children" Relationship="EFTestModels.FK_Child_Item" FromRole="Item" ToRole="Child" />
+          <NavigationProperty Name="Children" Relationship="EFTestModels.FK_Children_Item" FromRole="Item" ToRole="Child" />
         </EntityType>
-        <EntityContainer Name="EFTestEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Items" EntityType="Self.Item" />
-          <EntitySet Name="Children" EntityType="EFTestModels.Child" />
-          <AssociationSet Name="FK_Child_Item" Association="EFTestModels.FK_Child_Item">
-            <End Role="Item" EntitySet="Items" />
-            <End Role="Child" EntitySet="Children" />
-          </AssociationSet>
-        </EntityContainer>
         <EntityType Name="Child">
           <Key>
             <PropertyRef Name="Id" />
@@ -71,9 +99,9 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="ItemId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Item" Relationship="EFTestModels.FK_Child_Item" FromRole="Child" ToRole="Item" />
+          <NavigationProperty Name="Item" Relationship="EFTestModels.FK_Children_Item" FromRole="Child" ToRole="Item" />
         </EntityType>
-        <Association Name="FK_Child_Item">
+        <Association Name="FK_Children_Item">
           <End Type="EFTestModels.Item" Role="Item" Multiplicity="1" />
           <End Type="EFTestModels.Child" Role="Child" Multiplicity="*" />
           <ReferentialConstraint>
@@ -85,32 +113,54 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="DerivedChild" BaseType="EFTestModels.Child">
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Child" Relationship="EFTestModels.FK_Children_DerivedChildren" FromRole="DerivedChildren" ToRole="Child" />
+        </EntityType>
+        <Association Name="FK_Children_DerivedChildren">
+          <End Type="EFTestModels.Child" Role="Child" Multiplicity="1" />
+          <End Type="EFTestModels.DerivedChild" Role="DerivedChildren" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Child">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="DerivedChildren">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="EFTestModelsStoreContainer" CdmEntityContainer="EFTestEntities">
+          <EntitySetMapping Name="Children">
+            <EntityTypeMapping TypeName="IsTypeOf(EFTestModels.Child)">
+              <MappingFragment StoreEntitySet="Children">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="IsTypeOf(EFTestModels.DerivedChild)">
+              <MappingFragment StoreEntitySet="DerivedChildren">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Items">
             <EntityTypeMapping TypeName="EFTestModels.Item">
-              <MappingFragment StoreEntitySet="Item">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
+              <MappingFragment StoreEntitySet="Items">
                 <ScalarProperty Name="IsEnabled" ColumnName="IsEnabled" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Children">
-            <EntityTypeMapping TypeName="EFTestModels.Child">
-              <MappingFragment StoreEntitySet="Child">
-                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-        </EntityContainerMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

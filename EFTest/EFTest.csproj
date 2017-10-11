@@ -54,6 +54,9 @@
     <Compile Include="Child.cs">
       <DependentUpon>EFTest.tt</DependentUpon>
     </Compile>
+    <Compile Include="DerivedChild.cs">
+      <DependentUpon>EFTest.tt</DependentUpon>
+    </Compile>
     <Compile Include="EFTest.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -76,7 +79,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <EntityDeploy Include="EFTest.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>EFTest.Designer.cs</LastGenOutput>
