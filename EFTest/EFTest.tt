@@ -1,6 +1,7 @@
 ﻿<#@ template language="C#" debug="false" hostspecific="true"#>
-<#@ include file="EF6.Utility.CS.ttinclude"#><#@ 
- output extension=".cs"#><#
+<#@ include file="EF6.Utility.CS.ttinclude"#>
+<#@ output extension=".cs"#>
+<#
 
 const string inputFile = @"EFTest.edmx";
 var textTransform = DynamicTextTransformation.Create(this);
@@ -24,7 +25,7 @@ foreach (var entity in typeMapper.GetItemsToGenerate<EntityType>(itemCollection)
     BeginNamespace(code);
 #>
 <#=codeStringGenerator.UsingDirectives(inHeader: false)#>
-<#=codeStringGenerator.EntityClassOpening(entity)#>
+<#=WriteDescription(entity.Documentation)#><#=codeStringGenerator.EntityClassOpening(entity)#>
 {
 <#
     var propertiesWithDefaultValues = typeMapper.GetPropertiesWithDefaultValues(entity);
@@ -70,7 +71,7 @@ foreach (var entity in typeMapper.GetItemsToGenerate<EntityType>(itemCollection)
         foreach (var edmProperty in simpleProperties)
         {
 #>
-    <#=codeStringGenerator.Property(edmProperty)#>
+    <#=WriteDescription(edmProperty.Documentation)#><#=codeStringGenerator.Property(edmProperty)#>
 <#
         }
     }
@@ -83,7 +84,7 @@ foreach (var entity in typeMapper.GetItemsToGenerate<EntityType>(itemCollection)
         foreach(var complexProperty in complexProperties)
         {
 #>
-    <#=codeStringGenerator.Property(complexProperty)#>
+    <#=WriteDescription(complexProperty.Documentation)#><#=codeStringGenerator.Property(complexProperty)#>
 <#
         }
     }
@@ -103,7 +104,7 @@ foreach (var entity in typeMapper.GetItemsToGenerate<EntityType>(itemCollection)
 <#
             }
 #>
-    <#=codeStringGenerator.NavigationProperty(navigationProperty)#>
+    <#=WriteDescription(navigationProperty.Documentation)#><#=codeStringGenerator.NavigationProperty(navigationProperty)#>
 <#
         }
     }
@@ -729,5 +730,20 @@ public static void ArgumentNotNull<T>(T arg, string name) where T : class
     {
         throw new ArgumentNullException(name);
     }
+}
+
+public string WriteDescription(System.Data.Entity.Core.Metadata.Edm.Documentation docs)
+{
+    if (docs == null || String.IsNullOrEmpty(docs.Summary))
+    {
+        return string.Empty;
+    }
+
+    return new StringBuilder()
+      .AppendLine(CurrentIndent)
+      .AppendLine("/// <summary>")
+      .AppendFormat("/// {0}", docs.Summary).AppendLine()
+      .AppendLine("/// </summary>")
+      .ToString();
 }
 #>
