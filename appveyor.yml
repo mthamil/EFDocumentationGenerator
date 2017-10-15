@@ -49,7 +49,7 @@ build:
   verbosity: minimal               # MSBuild verbosity level
 
 cache:
-  - packages -> **\packages.config
+  - extension\packages -> **\packages.config
 
 assembly_info:
   patch: true
