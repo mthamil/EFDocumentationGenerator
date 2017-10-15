@@ -67,7 +67,7 @@ nuget:
 #---------------------------------#
 
 test_script:
-  - ps: '&"$($env:APPVEYOR_BUILD_FOLDER)\packages\xunit.runner.console*\tools\xunit.console.exe" "$($env:APPVEYOR_BUILD_FOLDER)\Tests.Unit\bin\$($env:CONFIGURATION)\Tests.Unit.dll" -parallel none -appveyor'
+  - ps: '&".\packages\xunit.runner.console*\tools\xunit.console.exe" ".\Tests.Unit\bin\$($env:CONFIGURATION)\Tests.Unit.dll" -parallel none -appveyor'
 
 
 #---------------------------------#
