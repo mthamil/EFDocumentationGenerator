@@ -45,7 +45,7 @@ before_build:
   - nuget restore
 
 build:
-  project: EFDocumentationGenerator.sln
+  project: extension\EFDocumentationGenerator.sln
   verbosity: minimal               # MSBuild verbosity level
 
 cache:
