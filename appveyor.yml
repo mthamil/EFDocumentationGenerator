@@ -53,7 +53,7 @@ cache:
 
 assembly_info:
   patch: true
-  file: '**\AssemblyInfo.*'
+  file: 'extension\**\AssemblyInfo.*'
   assembly_version: $(VersionPrefix).0
   assembly_file_version: $(VersionPrefix).$(APPVEYOR_BUILD_NUMBER)
   assembly_informational_version: '{version}'
