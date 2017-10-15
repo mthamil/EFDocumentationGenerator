@@ -13,7 +13,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'An item''s name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Items', @level2type=N'COLUMN',@level2name=N'Name'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Whether an item is enabled.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Items', @level2type=N'COLUMN',@level2name=N'Description'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Whether an item is enabled.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Items', @level2type=N'COLUMN',@level2name=N'IsEnabled'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Represents an item.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Items'
