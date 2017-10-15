@@ -740,10 +740,10 @@ public string WriteDescription(System.Data.Entity.Core.Metadata.Edm.Documentatio
     }
 
     return new StringBuilder()
-      .AppendLine(CurrentIndent)
-      .AppendLine("/// <summary>")
-      .AppendFormat("/// {0}", docs.Summary).AppendLine()
-      .AppendLine("/// </summary>")
-      .ToString();
+        .AppendLine(CurrentIndent)
+        .AppendLine("/// <summary>")
+        .AppendFormat("/// {0}", docs.Summary).AppendLine()
+        .AppendLine("/// </summary>")
+        .ToString();
 }
 #>
