@@ -64,7 +64,6 @@ namespace DocumentationGenerator.Utilities
 		{
 			return project.ProjectItems
 			              .Cast<ProjectItem>()
-			              .Where(item => item.ProjectItems == null || item.ProjectItems.Count == 0)
 			              .SingleOrDefault(item => predicate(item));
 		}
 	}

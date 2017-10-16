@@ -6,6 +6,7 @@ using EnvDTE;
 using Moq;
 using Tests.Unit.Support;
 using Xunit;
+using System.Linq;
 
 namespace Tests.Unit.EntityDocExtension.ConnectionStrings
 {
@@ -46,6 +47,50 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
 
                 var configItem = CreateAppConfig(tempConfigFile.File, configName);
                 _projectItems.Add(configItem.Object);
+
+                // Act.
+                var connectionString = _underTest.Locate(_project.Object);
+
+                // Assert.
+                Assert.Equal(@"LOCALHOST\SQLEXPRESS", connectionString.DataSource);
+                Assert.Equal("Test", connectionString.InitialCatalog);
+                Assert.True(connectionString.IntegratedSecurity);
+                Assert.True(connectionString.MultipleActiveResultSets);
+            }
+        }
+
+        [Theory]
+        [InlineData("App.config")]
+        [InlineData("Web.config")]
+        public void Test_Locate_When_Config_Transforms_Exist(string configName)
+        {
+            using (var tempConfigFile = new TemporaryFile(ValidConfigXml))
+            {
+                // Arrange.
+                _project.SetupGet(pi => pi.Saved).Returns(true);
+
+                var configItem = CreateAppConfig(tempConfigFile.File, configName);
+                _projectItems.Add(configItem.Object);
+
+                // Set up child config transforms.
+                var configChildItems = new Mock<ProjectItems>();
+                var configChildren = new[] { "Release", "Debug" }
+                    .Select(s => configName.Insert(configName.IndexOf('.'), $".{s}"))
+                    .Select(s => CreateAppConfig(new FileInfo(s), s))
+                    .ToList();
+
+                configChildItems.Setup(pi => pi.GetEnumerator())
+                                .Returns(() => configChildren.GetEnumerator());
+
+                configChildItems.As<IEnumerable>()
+                                 .Setup(pi => pi.GetEnumerator())
+                                 .Returns(() => configChildren.GetEnumerator());
+
+                configChildItems.SetupGet(pi => pi.Count)
+                                 .Returns(() => configChildren.Count);
+
+                configItem.SetupGet(p => p.ProjectItems)
+                          .Returns(configChildItems.Object);
 
                 // Act.
                 var connectionString = _underTest.Locate(_project.Object);
@@ -178,6 +223,7 @@ namespace Tests.Unit.EntityDocExtension.ConnectionStrings
             configItem.Setup(pi => pi.get_FileNames(0)).Returns(configFile.FullName);
             configItem.SetupGet(pi => pi.Saved).Returns(!hasChanges);
             configItem.SetupGet(pi => pi.get_IsOpen(It.IsAny<string>())).Returns(hasChanges);
+            configItem.SetupGet(pi => pi.Kind).Returns(Constants.vsProjectItemKindPhysicalFile);
             return configItem;
         }
 
