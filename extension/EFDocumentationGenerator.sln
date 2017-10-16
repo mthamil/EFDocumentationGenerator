@@ -1,23 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFDocumentationGenerator", "EFDocumentationGenerator\EFDocumentationGenerator.csproj", "{4801E905-4B73-4ED5-942C-1FBB90498EE4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Unit", "Tests.Unit\Tests.Unit.csproj", "{E5C3FA90-A2E2-4871-AEDE-A01AD27A2B92}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7269794B-6F61-4EC9-8469-E6D5EF11FB60}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFDocumentationGenerator.Package", "EFDocumentationGenerator.Package\EFDocumentationGenerator.Package.csproj", "{3B89C2CA-0B02-4DF5-9BAB-7E23C2ADA5F8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A836C2C9-C4E9-4BFE-9FBF-269EC1A65DDE}"
 	ProjectSection(SolutionItems) = preProject
-		.gitignore = .gitignore
-		appveyor.yml = appveyor.yml
-		LICENSE.txt = LICENSE.txt
-		NOTICE.txt = NOTICE.txt
-		README.md = README.md
+		..\.gitignore = ..\.gitignore
+		..\appveyor.yml = ..\appveyor.yml
+		..\LICENSE.txt = ..\LICENSE.txt
+		..\NOTICE.txt = ..\NOTICE.txt
+		..\README.md = ..\README.md
 		Visual Studio 2015 Image Library EULA.md = Visual Studio 2015 Image Library EULA.md
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFDocumentationGenerator.Package", "EFDocumentationGenerator.Package\EFDocumentationGenerator.Package.csproj", "{3B89C2CA-0B02-4DF5-9BAB-7E23C2ADA5F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,5 +40,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3FD58EC2-C528-4371-95F5-D5D53470F611}
 	EndGlobalSection
 EndGlobal

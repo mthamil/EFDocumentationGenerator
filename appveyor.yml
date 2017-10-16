@@ -36,6 +36,7 @@ configuration: Release
 
 # scripts to run before build
 before_build:
+  - cd extension
   - ps: |
       $manifestPath = (Get-ChildItem .\*Package\*.vsixmanifest).FullName
       $manifestXml = [xml](Get-Content $manifestPath)
@@ -44,14 +45,15 @@ before_build:
   - nuget restore
 
 build:
+  project: extension\EFDocumentationGenerator.sln
   verbosity: minimal               # MSBuild verbosity level
 
 cache:
-  - packages -> **\packages.config
+  - extension\packages -> **\packages.config
 
 assembly_info:
   patch: true
-  file: '**\AssemblyInfo.*'
+  file: 'extension\**\AssemblyInfo.*'
   assembly_version: $(VersionPrefix).0
   assembly_file_version: $(VersionPrefix).$(APPVEYOR_BUILD_NUMBER)
   assembly_informational_version: '{version}'
@@ -66,7 +68,7 @@ nuget:
 #---------------------------------#
 
 test_script:
-  - ps: '&"$($env:APPVEYOR_BUILD_FOLDER)\packages\xunit.runner.console*\tools\xunit.console.exe" "$($env:APPVEYOR_BUILD_FOLDER)\Tests.Unit\bin\$($env:CONFIGURATION)\Tests.Unit.dll" -parallel none -appveyor'
+  - ps: '&".\packages\xunit.runner.console*\tools\xunit.console.exe" ".\Tests.Unit\bin\$($env:CONFIGURATION)\Tests.Unit.dll" -parallel none -appveyor'
 
 
 #---------------------------------#
