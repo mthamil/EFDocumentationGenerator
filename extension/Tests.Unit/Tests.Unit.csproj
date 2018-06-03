@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <Reference Include="Microsoft.Data.Entity.Design.Extensibility">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\PublicAssemblies\Microsoft.Data.Entity.Design.Extensibility.dll</HintPath>
     </Reference>
   </ItemGroup>
