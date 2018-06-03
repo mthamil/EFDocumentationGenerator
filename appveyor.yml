@@ -69,7 +69,7 @@ nuget:
 #---------------------------------#
 
 test_script:
-  - ps: cd *.Tests
+  - ps: cd Tests.Unit
   - ps: dotnet xunit --configuration $Env:CONFIGURATION --no-build --fx-version 2.0.0
 
 
