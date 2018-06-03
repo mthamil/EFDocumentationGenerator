@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFDocumentationGenerator", "EFDocumentationGenerator\EFDocumentationGenerator.csproj", "{4801E905-4B73-4ED5-942C-1FBB90498EE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Unit", "Tests.Unit\Tests.Unit.csproj", "{E5C3FA90-A2E2-4871-AEDE-A01AD27A2B92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Unit", "Tests.Unit\Tests.Unit.csproj", "{E5C3FA90-A2E2-4871-AEDE-A01AD27A2B92}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFDocumentationGenerator.Package", "EFDocumentationGenerator.Package\EFDocumentationGenerator.Package.csproj", "{3B89C2CA-0B02-4DF5-9BAB-7E23C2ADA5F8}"
 EndProject
@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 		..\appveyor.yml = ..\appveyor.yml
+		..\CHANGELOG.md = ..\CHANGELOG.md
 		..\LICENSE.txt = ..\LICENSE.txt
 		..\NOTICE.txt = ..\NOTICE.txt
 		..\README.md = ..\README.md
