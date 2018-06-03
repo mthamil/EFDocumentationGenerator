@@ -7,13 +7,13 @@
 #    environment configuration    #
 #---------------------------------#
 
-# Operating system (build VM template)
-os: Visual Studio 2017
+# Build VM template
+image: Visual Studio 2017
 
 environment:  
   major: 2
-  minor: 1
-  patch: 1
+  minor: 2
+  patch: 0
 
 
 # scripts that are called at very beginning, before repo cloning
