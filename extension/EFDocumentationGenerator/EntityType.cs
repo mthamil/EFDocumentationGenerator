@@ -28,6 +28,7 @@ namespace DocumentationGenerator
     {
         private readonly INamespacedOperations _conceptualModel;
         private readonly XElement _element;
+        private readonly EntityStorageModel _storageModel;
 
         /// <summary>
         /// Initialized a new <see cref="EntityType"/>.
@@ -35,14 +36,13 @@ namespace DocumentationGenerator
         /// <param name="conceptualModel">The conceptual model the entity belongs to.</param>
         /// <param name="element">The backing entity type element.</param>
         /// <param name="conceptualName">The name of an entity in the conceptual model.</param>
-        /// <param name="storageName">The name of an entity in the storage model.</param>
-        public EntityType(INamespacedOperations conceptualModel, XElement element, string conceptualName, string storageName)
+        /// <param name="storageModel">The entity's storage model.</param>
+        public EntityType(INamespacedOperations conceptualModel, XElement element, string conceptualName, EntityStorageModel storageModel)
         {
             _conceptualModel = conceptualModel ?? throw new ArgumentNullException(nameof(conceptualModel));
             _element = element ?? throw new ArgumentNullException(nameof(element));
-
             ConceptualName = conceptualName ?? throw new ArgumentNullException(nameof(conceptualName));
-            StorageName = storageName ?? throw new ArgumentNullException(nameof(storageName));
+            _storageModel = storageModel ?? throw new ArgumentNullException(nameof(storageModel));
         }
 
         /// <summary>
@@ -61,13 +61,15 @@ namespace DocumentationGenerator
         /// <summary>
         /// The name of an entity in the storage model.
         /// </summary>
-        public string StorageName { get; }
+        public string StorageName => _storageModel.EntityName;
 
         private EntityProperty CreateProperty(XElement element)
         {
+            var name = element.Attribute("Name").Value;
             return new EntityProperty(_conceptualModel,
                                       element,
-                                      element.Attribute("Name").Value,
+                                      name,
+                                      _storageModel[name],
                                       EntityPropertyType.Property);
         }
 
@@ -78,9 +80,11 @@ namespace DocumentationGenerator
                 .Descendants("AssociationSet")
                 .Single(ae => ae.Attribute("Association").Value == relationship);
 
+            var name = association.Attribute("Name").Value;
             return new EntityProperty(_conceptualModel,
                                       element,
-                                      association.Attribute("Name").Value,
+                                      name,
+                                      _storageModel[name],
                                       EntityPropertyType.NavigationProperty);
         }
 

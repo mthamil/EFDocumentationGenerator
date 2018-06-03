@@ -29,13 +29,13 @@ namespace DocumentationGenerator
     {
         private readonly INamespacedOperations _conceptualModel;
         private readonly string _conceptualTypeNamespace;
-        private readonly IDictionary<string, string> _mappings;
+        private readonly IDictionary<string, EntityStorageModel> _mappings;
 
         /// <summary>
         /// Initializes a new <see cref="EntityDataModel"/>.
         /// </summary>
         /// <param name="edmxDocument">The edmx file containing the model.</param>
-        public EntityDataModel(XDocument edmxDocument)
+        public EntityDataModel(XElement edmxDocument)
         {
             _conceptualModel = edmxDocument?.Edm() ?? throw new ArgumentNullException(nameof(edmxDocument));
 
@@ -48,10 +48,9 @@ namespace DocumentationGenerator
             // that is being mapped is specified by the StoreEntitySet attribute of the 
             // child MappingFragment element.
             _mappings = edmxDocument.Cs().Descendants("EntitySetMapping")
-                                         .SelectMany(es => es.Cs().Elements("EntityTypeMapping"))
-                                         .ToDictionary(et => Sanitize(et.Attribute("TypeName").Value),
-                                                       et => et.Cs().Element("MappingFragment")
-                                                                    .Attribute("StoreEntitySet").Value);
+                                          .SelectMany(es => es.Cs().Elements("EntityTypeMapping"))
+                                          .ToDictionary(et => Sanitize(et.Attribute("TypeName").Value),
+                                                        et => new EntityStorageModel(et));
         }
 
         private static string Sanitize(string typeName) => typeName.Replace("IsTypeOf(", string.Empty)
@@ -67,13 +66,13 @@ namespace DocumentationGenerator
         private EntityType CreateEntity(XElement element)
         {
             var conceptualName = $"{_conceptualTypeNamespace}.{element.Attribute("Name").Value}";
-            if (!_mappings.TryGetValue(conceptualName, out var storageName))
+            if (!_mappings.TryGetValue(conceptualName, out var storageModel))
                 return null;
 
             return new EntityType(_conceptualModel,
                                   element,
                                   conceptualName,
-                                  storageName);
+                                  storageModel);
         }
     }
 }

@@ -39,15 +39,15 @@ namespace DocumentationGenerator
         /// <param name="modelDocument">An .edmx XML document to update</param>
         public void UpdateDocumentation(XDocument modelDocument)
         {
-            var dataModel = new EntityDataModel(modelDocument);
+            var dataModel = new EntityDataModel(modelDocument.Root);
             foreach (var entity in dataModel.Entities)
             {
-                var entityDocumentation = _documentationSource.GetDocumentation(entity.StorageName);
+                var entityDocumentation = _documentationSource.GetDocumentation(entity);
                 entity.UpdateDocumentation(entityDocumentation);
 
                 foreach (var property in entity.Properties)
                 {
-                    var propertyDocumentation = _documentationSource.GetDocumentation(entity.StorageName, property);
+                    var propertyDocumentation = _documentationSource.GetDocumentation(entity, property);
                     property.UpdateDocumentation(propertyDocumentation);
                 }
             }

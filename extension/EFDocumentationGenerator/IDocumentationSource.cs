@@ -17,17 +17,24 @@ using System;
 
 namespace DocumentationGenerator
 {
-	/// <summary>
-	/// Represents a source of entity documentation.
-	/// </summary>
-	public interface IDocumentationSource : IDisposable
-	{
-		/// <summary>
-		/// Retrieves documentation for an entity or entity property.
-		/// </summary>
-		/// <param name="entityName">An entity name</param>
-		/// <param name="property">An optional entity property</param>
-		/// <returns>A documentation string</returns>
-		string GetDocumentation(string entityName, EntityProperty property = null);
-	}
+    /// <summary>
+    /// Represents a source of entity documentation.
+    /// </summary>
+    public interface IDocumentationSource : IDisposable
+    {
+        /// <summary>
+        /// Retrieves documentation for an entity.
+        /// </summary>
+        /// <param name="entity">An entity.</param>
+        /// <returns>A documentation string</returns>
+        string GetDocumentation(EntityType entity);
+
+        /// <summary>
+        /// Retrieves documentation for an entity property.
+        /// </summary>
+        /// <param name="entity">The parent entity.</param>
+        /// <param name="property">An entity property.</param>
+        /// <returns>A documentation string.</returns>
+        string GetDocumentation(EntityType entity, EntityProperty property);
+    }
 }

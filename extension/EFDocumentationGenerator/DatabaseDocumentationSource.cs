@@ -40,8 +40,17 @@ namespace DocumentationGenerator
             _connection.Dispose();
         }
 
-        /// <see cref="IDocumentationSource.GetDocumentation"/>
-        public string GetDocumentation(string entityName, EntityProperty property = null)
+        /// <summary>
+        /// <see cref="IDocumentationSource.GetDocumentation(EntityType)"/>
+        /// </summary>
+        public string GetDocumentation(EntityType entity) => GetDocumentation(entity.StorageName, null);
+
+        /// <summary>
+        /// <see cref="IDocumentationSource.GetDocumentation(EntityType, EntityProperty)"/>
+        /// </summary>
+        public string GetDocumentation(EntityType entity, EntityProperty property) => GetDocumentation(entity.StorageName, property);
+
+        private string GetDocumentation(string entityName, EntityProperty property)
         {
             bool useSecondLevel = property != null;
 
@@ -63,7 +72,7 @@ namespace DocumentationGenerator
                 command.Parameters.Add(new SqlParameter("tableName", entityName));
 
                 if (useSecondLevel)
-                    command.Parameters.Add(new SqlParameter("secondLevelName", property.Name));
+                    command.Parameters.Add(new SqlParameter("secondLevelName", property.StorageName));
 
                 return command.ExecuteScalar() as string;
             }

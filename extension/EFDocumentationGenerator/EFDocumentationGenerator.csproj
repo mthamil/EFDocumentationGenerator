@@ -128,6 +128,7 @@
     <Compile Include="EntityDataModel.cs" />
     <Compile Include="EntityProperty.cs" />
     <Compile Include="EntityPropertyType.cs" />
+    <Compile Include="EntityStorageModel.cs" />
     <Compile Include="EntityType.cs" />
     <Compile Include="EnvDTEConstants.cs" />
     <Compile Include="ErrorListAdapter.cs" />
