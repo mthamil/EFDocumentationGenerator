@@ -43,6 +43,7 @@ before_build:
       $manifestXml.PackageManifest.Metadata.Identity.Version = "$($Env:VersionPrefix).$($Env:APPVEYOR_BUILD_NUMBER)"
       $manifestXml.Save($manifestPath)
   - nuget restore
+  - dotnet restore
 
 build:
   project: extension\EFDocumentationGenerator.sln
@@ -68,7 +69,8 @@ nuget:
 #---------------------------------#
 
 test_script:
-  - ps: '&".\packages\xunit.runner.console*\tools\xunit.console.exe" ".\Tests.Unit\bin\$($env:CONFIGURATION)\Tests.Unit.dll" -parallel none -appveyor'
+  - ps: cd *.Tests
+  - ps: dotnet xunit --configuration $Env:CONFIGURATION --no-build --fx-version 2.0.0
 
 
 #---------------------------------#
@@ -76,7 +78,7 @@ test_script:
 #---------------------------------#
 
 artifacts:
-  - path: '**\*.vsix'
+  - path: 'extension\**\*.vsix'
 
 
 #---------------------------------#
