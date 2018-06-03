@@ -37,7 +37,7 @@ namespace Tests.Unit.EntityDocExtension
                 { ("Children", null),                   "Children_Summary" },
                 { ("Children", "ID"),                   "Children_Id_Summary" },
                 { ("Children", "NAME"),                 "Children_Name_Summary" },
-                { ("Children", "PARENT_ID"),             "Children_ParentId_Summary" },
+                { ("Children", "PARENT_ID"),            "Children_ParentId_Summary" },
                 { ("Children", "FK_Children_ParentId"), "Children_Parent_ForeignKey_Summary" }
             };
 
