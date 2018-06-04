@@ -130,7 +130,7 @@ namespace DocumentationGenerator
         {
             // Emit a warning if model errors already existed, particularly to avoid this extension getting blamed for them.
             if (_edmxErrors.Count > 0)
-                _logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: Warning - Model contains errors prior to update. This plugin may erroneously be blamed for them.", DateTime.Now);
+                _logger.LogTimestamped("Warning - Model contains errors prior to update. This plugin may erroneously be blamed for them.");
 
             UpdateModel(context.Project, context.CurrentDocument, context.WizardKind);
         }
@@ -144,7 +144,7 @@ namespace DocumentationGenerator
                 return;
             }
 
-            _logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: ------ Starting documentation generation for project: {1} ------", DateTime.Now, project.UniqueName);
+            _logger.LogTimestamped("------ Starting documentation generation for project: {0} ------", project.UniqueName);
 
             // Attempt to find the database connection string.
             SqlConnectionStringBuilder connectionString;
@@ -158,7 +158,7 @@ namespace DocumentationGenerator
                 if (mode == WizardKind.Generate)
                     _logger.Log("Try updating the model after initial generation and the connection string has been saved to a config file.");
 
-                _logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: Documentation generation failed", DateTime.Now);
+                _logger.LogTimestamped("Documentation generation failed");
                 return;
             }
 
@@ -167,7 +167,7 @@ namespace DocumentationGenerator
                 _modelUpdaterFactory(docSource).UpdateDocumentation(currentDocument);
             }
 
-            _logger.Log("{0:yyyy-MM-dd HH:mm:ss:ffff}: Documentation generation succeeded", DateTime.Now);
+            _logger.LogTimestamped("Documentation generation succeeded");
         }
 
         private ICollection<ErrorItem> _edmxErrors; 

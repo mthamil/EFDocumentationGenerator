@@ -1,4 +1,4 @@
-//  Entity Designer Documentation Generator
+﻿//  Entity Designer Documentation Generator
 //  Copyright 2017 Matthew Hamilton - matthamilton@live.com
 // 
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,33 +14,21 @@
 //  limitations under the License.
 
 using System;
-using System.ComponentModel.Composition;
-using EnvDTE;
 
 namespace DocumentationGenerator.Diagnostics
 {
     /// <summary>
-    /// A logger that writes to a pane of the Visual Studio Output Window.
+    /// Provides extensions to <see cref="ILogger"/>.
     /// </summary>
-    [Export(typeof(ILogger))]
-    public class OutputWindowLogger : ILogger
+    public static class LoggerExtensions
     {
         /// <summary>
-        /// Initializes a new <see cref="OutputWindowLogger"/>.
+        /// Prepends a timestamp to the given log message.
         /// </summary>
-        /// <param name="paneProvider">Retrieves the pane to log to</param>
-        [ImportingConstructor]
-        public OutputWindowLogger(IOutputPaneProvider paneProvider)
+        public static void LogTimestamped(this ILogger logger, string message, params object[] arguments)
         {
-            _pane = paneProvider.Get();
+            logger.Log($"{DateTime.Now:yyyy-MM-dd HH:mm:ss:ffff}: {message}", arguments);
         }
-
-        /// <see cref="ILogger.Log"/>
-        public void Log(string message, params object[] arguments)
-        {
-            _pane.OutputString(String.Format(message + Environment.NewLine, arguments));
-        }
-
-        private readonly OutputWindowPane _pane;
     }
 }
+

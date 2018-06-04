@@ -14,9 +14,13 @@ namespace Tests.Unit.EntityDocExtension
         {
             _edmx = edmx;
 
-            _docSource.Setup(s => s.GetDocumentation(It.IsAny<string>(), It.IsAny<EntityProperty>()))
-                      .Returns((string entityName, EntityProperty property) =>
-                          _documentation.TryGetValue((entityName, property?.Name), out var doc) ? doc : null);
+            _docSource.Setup(s => s.GetDocumentation(It.IsAny<EntityType>()))
+                      .Returns((EntityType entity) =>
+                          _documentation.TryGetValue((entity.StorageName, null), out var doc) ? doc : null);
+
+            _docSource.Setup(s => s.GetDocumentation(It.IsAny<EntityType>(), It.IsAny<EntityProperty>()))
+                      .Returns((EntityType entity, EntityProperty property) =>
+                          _documentation.TryGetValue((entity.StorageName, property.StorageName), out var doc) ? doc : null);
 
             _underTest = new ModelDocumentationUpdater(_docSource.Object);
         }
@@ -31,9 +35,9 @@ namespace Tests.Unit.EntityDocExtension
                 { ("Parent", "Id"),                     "Parent_Id_Summary" },
                 { ("Parent", "Name"),                   "Parent_Name_Summary" },
                 { ("Children", null),                   "Children_Summary" },
-                { ("Children", "Id"),                   "Children_Id_Summary" },
-                { ("Children", "Name"),                 "Children_Name_Summary" },
-                { ("Children", "ParentId"),             "Children_ParentId_Summary" },
+                { ("Children", "ID"),                   "Children_Id_Summary" },
+                { ("Children", "NAME"),                 "Children_Name_Summary" },
+                { ("Children", "PARENT_ID"),            "Children_ParentId_Summary" },
                 { ("Children", "FK_Children_ParentId"), "Children_Parent_ForeignKey_Summary" }
             };
 

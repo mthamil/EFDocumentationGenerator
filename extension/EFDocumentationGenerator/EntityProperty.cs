@@ -32,20 +32,27 @@ namespace DocumentationGenerator
         /// </summary>
         /// <param name="conceptualModel">The model a property belongs to.</param>
         /// <param name="element">The backing property element.</param>
-        /// <param name="name">The property name.</param>
+        /// <param name="conceptualName">The property name in the conceptual model.</param>
+        /// <param name="storageName">The property name in the storage model.</param>
         /// <param name="type">The property type.</param>
-        public EntityProperty(INamespacedOperations conceptualModel, XElement element, string name, EntityPropertyType type)
+        public EntityProperty(INamespacedOperations conceptualModel, XElement element, string conceptualName, string storageName, EntityPropertyType type)
         {
             _conceptualModel = conceptualModel ?? throw new ArgumentNullException(nameof(conceptualModel));
             _element = element;
-            Name = name;
+            ConceptualName = conceptualName;
+            StorageName = storageName;
             Type = type;
         }
 
         /// <summary>
-        /// The property name.
+        /// The property name in the conceptual model.
         /// </summary>
-        public string Name { get; }
+        public string ConceptualName { get; }
+
+        /// <summary>
+        /// The property name in the storage model.
+        /// </summary>
+        public string StorageName { get; }
 
         /// <summary>
         /// The property type.

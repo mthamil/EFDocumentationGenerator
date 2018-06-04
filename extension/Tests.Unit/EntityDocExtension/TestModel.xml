@@ -53,9 +53,9 @@
           <EntitySetMapping Name="Children">
             <EntityTypeMapping TypeName="IsTypeOf(TestModel.Child)">
               <MappingFragment StoreEntitySet="Children">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="NAME" />
+                <ScalarProperty Name="ParentId" ColumnName="PARENT_ID" />
               </MappingFragment>
             </EntityTypeMapping>
             <EntityTypeMapping TypeName="IsTypeOf(TestModel.DerivedChild)">

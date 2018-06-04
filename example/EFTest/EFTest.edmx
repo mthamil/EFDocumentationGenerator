@@ -27,7 +27,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="IsEnabled" Type="bit" Nullable="false" />
+          <Property Name="IS_ENABLED" Type="bit" Nullable="false" />
         </EntityType>
         <Association Name="FK_Children_DerivedChildren">
           <End Role="Children" Type="Self.Children" Multiplicity="1" />
@@ -73,7 +73,7 @@
         <EntityContainer Name="EFTestEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Items" EntityType="EFTestModels.Item" />
           <EntitySet Name="Children" EntityType="EFTestModels.Child" />
-          <AssociationSet Name="FK_Children_Item" Association="EFTestModels.FK_Children_Item">
+          <AssociationSet Name="FK_Children_Items" Association="EFTestModels.FK_Children_Items">
             <End Role="Item" EntitySet="Items" />
             <End Role="Child" EntitySet="Children" />
           </AssociationSet>
@@ -81,8 +81,8 @@
             <End Role="Child" EntitySet="Children" />
             <End Role="DerivedChildren" EntitySet="Children" />
           </AssociationSet>
-          </EntityContainer>
-		    <EntityType Name="Item">
+        </EntityContainer>
+        <EntityType Name="Item">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -90,7 +90,7 @@
           <Property Name="Name" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="IsEnabled" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Children" Relationship="EFTestModels.FK_Children_Item" FromRole="Item" ToRole="Child" />
+          <NavigationProperty Name="Children" Relationship="EFTestModels.FK_Children_Items" FromRole="Item" ToRole="Child" />
         </EntityType>
         <EntityType Name="Child">
           <Key>
@@ -99,9 +99,9 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="ItemId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Item" Relationship="EFTestModels.FK_Children_Item" FromRole="Child" ToRole="Item" />
+          <NavigationProperty Name="Item" Relationship="EFTestModels.FK_Children_Items" FromRole="Child" ToRole="Item" />
         </EntityType>
-        <Association Name="FK_Children_Item">
+        <Association Name="FK_Children_Items">
           <End Type="EFTestModels.Item" Role="Item" Multiplicity="1" />
           <End Type="EFTestModels.Child" Role="Child" Multiplicity="*" />
           <ReferentialConstraint>
@@ -129,7 +129,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -153,14 +153,14 @@
           <EntitySetMapping Name="Items">
             <EntityTypeMapping TypeName="EFTestModels.Item">
               <MappingFragment StoreEntitySet="Items">
-                <ScalarProperty Name="IsEnabled" ColumnName="IsEnabled" />
+                <ScalarProperty Name="IsEnabled" ColumnName="IS_ENABLED" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          </EntityContainerMapping>
+        </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>
