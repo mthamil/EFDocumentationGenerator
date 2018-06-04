@@ -1,7 +1,7 @@
 # Changelog
 
 
-## v2.2.0 (Unreleased)
+## v2.2.0
 
  - Support property names that differ from their mapped column names.
 
