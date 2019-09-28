@@ -1,10 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.VSSDK.BuildTools.15.0.26201\build\Microsoft.VSSDK.BuildTools.props" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.15.0.26201\build\Microsoft.VSSDK.BuildTools.props')" />
+  <Import Project="$(PkgMicrosoft_VSSDK_BuildTools)\build\Microsoft.VSSDK.BuildTools.props" Condition="Exists('$(PkgMicrosoft_VSSDK_BuildTools)\build\Microsoft.VSSDK.BuildTools.props')" />
   <PropertyGroup>
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -48,18 +46,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="..\..\CHANGELOG.md">
-      <Link>CHANGELOG.md</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <None Include="packages.config" />
-    <None Include="source.extension.vsixmanifest">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
+    <PackageReference Include="Microsoft.VisualStudio.SDK.Analyzers">
+      <Version>16.3.14</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VSSDK.BuildTools">
+      <Version>16.4.21</Version>
+      <GeneratePathProperty>True</GeneratePathProperty>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EFDocumentationGenerator\EFDocumentationGenerator.csproj">
@@ -68,6 +63,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\..\CHANGELOG.md">
+      <Link>CHANGELOG.md</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="..\..\LICENSE.txt">
       <Link>LICENSE.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -77,28 +77,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\packages\Microsoft.VisualStudio.SDK.Analyzers.16.3.14\analyzers\cs\Microsoft.VisualStudio.SDK.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\packages\Microsoft.VisualStudio.SDK.Analyzers.16.3.14\analyzers\cs\Microsoft.VisualStudio.SDK.Analyzers.dll" />
+    <None Include="source.extension.vsixmanifest">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.VSSDK.BuildTools.15.0.26201\build\Microsoft.VSSDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VSSDK.BuildTools.15.0.26201\build\Microsoft.VSSDK.BuildTools.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.VSSDK.BuildTools.15.0.26201\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VSSDK.BuildTools.15.0.26201\build\Microsoft.VSSDK.BuildTools.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.VisualStudio.SDK.Analyzers.16.3.14\build\Microsoft.VisualStudio.SDK.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VisualStudio.SDK.Analyzers.16.3.14\build\Microsoft.VisualStudio.SDK.Analyzers.targets'))" />
-  </Target>
-  <Import Project="..\packages\Microsoft.VSSDK.BuildTools.15.0.26201\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.15.0.26201\build\Microsoft.VSSDK.BuildTools.targets')" />
-  <Import Project="..\packages\Microsoft.VSSDK.BuildTools.15.0.26201\tools\vssdk\Microsoft.VsSDK.targets" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.15.0.26201\tools\vssdk\Microsoft.VsSDK.targets')" />
-  <Import Project="..\packages\Microsoft.VisualStudio.SDK.Analyzers.16.3.14\build\Microsoft.VisualStudio.SDK.Analyzers.targets" Condition="Exists('..\packages\Microsoft.VisualStudio.SDK.Analyzers.16.3.14\build\Microsoft.VisualStudio.SDK.Analyzers.targets')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <Import Project="$(PkgMicrosoft_VSSDK_BuildTools)\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('$(PkgMicrosoft_VSSDK_BuildTools)\build\Microsoft.VSSDK.BuildTools.targets')" />
+  <Import Project="$(PkgMicrosoft_VSSDK_BuildTools)\tools\vssdk\Microsoft.VsSDK.targets" Condition="Exists('$(PkgMicrosoft_VSSDK_BuildTools)\tools\vssdk\Microsoft.VsSDK.targets')" />
 </Project>
