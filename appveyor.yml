@@ -52,12 +52,13 @@ build:
 cache:
   - extension\packages -> **\packages.config
 
-assembly_info:
+dotnet_csproj:
   patch: true
-  file: 'extension\**\AssemblyInfo.*'
+  file: 'extension\**\*.csproj'
   assembly_version: $(VersionPrefix).0
-  assembly_file_version: $(VersionPrefix).$(APPVEYOR_BUILD_NUMBER)
-  assembly_informational_version: '{version}'
+  file_version: $(VersionPrefix).$(APPVEYOR_BUILD_NUMBER)
+  informational_version: '{version}'
+
 
 nuget:
   project_feed: true

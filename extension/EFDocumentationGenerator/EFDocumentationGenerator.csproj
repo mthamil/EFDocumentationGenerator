@@ -13,6 +13,9 @@
     <Product>Entity Designer Documentation Generator</Product>
     <Description>An extension to the ADO.NET Entity Designer that populates documentation from the database.</Description>
     <Copyright>Copyright © Matt Hamilton 2019</Copyright>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <InformationalVersion>1.0.0</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
