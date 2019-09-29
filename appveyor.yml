@@ -12,7 +12,7 @@ image: Visual Studio 2017
 
 environment:  
   major: 2
-  minor: 2
+  minor: 3
   patch: 0
 
 
@@ -85,4 +85,8 @@ artifacts:
 #     deployment configuration    #
 #---------------------------------#
 
-deploy:
+deploy_script:
+  - ps: |
+     Write-Host "$(Get-Location)"
+     Write-Host $artifacts['EntityDocumentationGenerator.vsix']
+
