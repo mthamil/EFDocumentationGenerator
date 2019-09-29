@@ -9,15 +9,16 @@ namespace Tests.Unit.Support
 		[Fact]
 		public void Test_File()
 		{
-			// Arrange.
-			var temp = new TemporaryFile();
+            // Arrange.
+            using (var temp = new TemporaryFile())
+            {
+                // Act.
+                var file = temp.File;
 
-			// Act.
-			var file = temp.File;
-
-			// Assert.
-			Assert.NotNull(file);
-			Assert.Equal(Path.GetTempPath().TrimEnd(Path.DirectorySeparatorChar), file.DirectoryName.TrimEnd(Path.DirectorySeparatorChar));
+                // Assert.
+                Assert.NotNull(file);
+                Assert.Equal(Path.GetTempPath().TrimEnd(Path.DirectorySeparatorChar), file.DirectoryName.TrimEnd(Path.DirectorySeparatorChar));
+            }  
 		}
 
 		[Fact]
