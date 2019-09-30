@@ -88,6 +88,11 @@ artifacts:
 
 deploy_script:
   - ps: |
+     cd "$($Env:APPVEYOR_BUILD_FOLDER)\extension"
      Write-Host "$(Get-Location)"
      Write-Host $artifacts['EntityDocumentationGenerator.vsix']
+     foreach ($artifactName in $artifacts.keys) {
+       write-host $artifacts[$artifactName]
+     }
+     
 
