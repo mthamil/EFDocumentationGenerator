@@ -77,6 +77,7 @@ test_script:
 
 artifacts:
   - path: 'extension\**\*.vsix'
+    name: vsix
 
 
 #---------------------------------#
@@ -86,10 +87,4 @@ artifacts:
 deploy_script:
   - ps: |
      cd "$($Env:APPVEYOR_BUILD_FOLDER)\extension"
-     Write-Host "$(Get-Location)"
-     Write-Host $artifacts['EntityDocumentationGenerator.vsix']
-     foreach ($artifactName in $artifacts.keys) {
-       write-host "$($artifactName): $($artifacts[$artifactName].Value)"
-     }
-     
-
+     write-host $artifacts['vsix'].path
