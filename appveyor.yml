@@ -49,9 +49,6 @@ build:
   project: extension\EFDocumentationGenerator.sln
   verbosity: minimal               # MSBuild verbosity level
 
-cache:
-  - extension\packages -> **\packages.config
-
 dotnet_csproj:
   patch: true
   file: 'extension\**\*.csproj'
@@ -92,7 +89,7 @@ deploy_script:
      Write-Host "$(Get-Location)"
      Write-Host $artifacts['EntityDocumentationGenerator.vsix']
      foreach ($artifactName in $artifacts.keys) {
-       write-host $artifacts[$artifactName]
+       write-host "$($artifactName): $($artifacts[$artifactName].Value)"
      }
      
 
