@@ -8,12 +8,14 @@
 #---------------------------------#
 
 # Build VM template
-image: Visual Studio 2017
+image: Visual Studio 2019
 
 environment:  
   major: 2
-  minor: 2
+  minor: 3
   patch: 0
+  publication_token:
+    secure: zdEn8EOBXHZa4gnNjtzCd2STHNsGuYvmqDS9nadj09gKLSy0kQinOx8yY3LtfGYOQgjspUVnRH+Iabw9NtvI4g==
 
 
 # scripts that are called at very beginning, before repo cloning
@@ -22,9 +24,9 @@ init:
   - ps: |
       $isCI = $Env:APPVEYOR_REPO_TAG -eq $false
       $isBranch = $isCI -and ($Env:APPVEYOR_REPO_BRANCH -ne 'master')
-      $branchSuffix = "$(if ($isBranch) { '-' + $Env:APPVEYOR_REPO_BRANCH } else { $null })"
+      $branchTag = "$(if ($isBranch) { $Env:APPVEYOR_REPO_BRANCH + '-' } else { $null })"
       $Env:VersionPrefix = "$($Env:major).$($Env:minor).$($Env:patch)"
-      $Env:VersionSuffix = "$(if ($isCI) { 'CI' + $Env:APPVEYOR_BUILD_NUMBER + $branchSuffix } else { $null })"
+      $Env:VersionSuffix = "$(if ($isCI) { $branchTag + 'CI' + $Env:APPVEYOR_BUILD_NUMBER } else { $null })"
       appveyor UpdateBuild -Version "$($Env:VersionPrefix)$(if ($isCI) { '-' } else { $null })$($Env:VersionSuffix)"
 
 #---------------------------------#
@@ -49,15 +51,13 @@ build:
   project: extension\EFDocumentationGenerator.sln
   verbosity: minimal               # MSBuild verbosity level
 
-cache:
-  - extension\packages -> **\packages.config
-
-assembly_info:
+dotnet_csproj:
   patch: true
-  file: 'extension\**\AssemblyInfo.*'
+  file: 'extension\**\*.csproj'
   assembly_version: $(VersionPrefix).0
-  assembly_file_version: $(VersionPrefix).$(APPVEYOR_BUILD_NUMBER)
-  assembly_informational_version: '{version}'
+  file_version: $(VersionPrefix).$(APPVEYOR_BUILD_NUMBER)
+  informational_version: '{version}'
+
 
 nuget:
   project_feed: true
@@ -79,10 +79,21 @@ test_script:
 
 artifacts:
   - path: 'extension\**\*.vsix'
+    name: vsix
 
 
 #---------------------------------#
 #     deployment configuration    #
 #---------------------------------#
 
-deploy:
+deploy_script:
+  - ps: |
+      if ($env:APPVEYOR_REPO_TAG) {
+          cd "$($Env:APPVEYOR_BUILD_FOLDER)\extension\EFDocumentationGenerator.Package"
+          $nugetCache = nuget locals all -list | where { $_ -like 'global-packages:*' } | %{ $_ -split ': ' } | select -last 1
+          $vsixPublisher = Get-ChildItem -File ($nugetCache + '\microsoft.vssdk.buildtools') -recurse |
+               where { $_.Name -eq 'VsixPublisher.exe' } | 
+               sort -Descending -Property CreationTime | 
+               select -First 1 -ExpandProperty FullName
+          & $vsixPublisher publish -payload $artifacts['vsix'].path -publishManifest 'manifest.json' -personalAccessToken $Env:publication_token
+      }

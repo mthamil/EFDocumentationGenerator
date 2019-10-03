@@ -1,0 +1,13 @@
+﻿{
+  "$schema": "http://json.schemastore.org/vsix-publish",
+  "categories": [ "data", "documentation", "modeling" ],
+  "identity": {
+    "internalName": "EntityDesignerDocumentationGenerator"
+  },
+  "overview": "overview.md",
+  "priceCategory": "free",
+  "publisher": "mthamil",
+  "private": false,
+  "qna": true,
+  "repo": "https://github.com/mthamil/EFDocumentationGenerator"
+}

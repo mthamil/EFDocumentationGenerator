@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 using DocumentationGenerator.ConnectionStrings;
 using DocumentationGenerator.Diagnostics;
@@ -25,6 +26,8 @@ using DocumentationGenerator.Utilities;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.Data.Entity.Design.Extensibility;
+
+[assembly: InternalsVisibleTo("Tests.Unit")]
 
 namespace DocumentationGenerator
 {
