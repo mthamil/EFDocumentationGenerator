@@ -88,6 +88,6 @@ artifacts:
 
 deploy_script:
   - ps: |
-      if ($env:APPVEYOR_REPO_TAG) {
+      if ($Env:APPVEYOR_REPO_TAG -eq $true) {
           write-host "test"
       }
