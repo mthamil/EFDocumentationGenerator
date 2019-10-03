@@ -89,5 +89,11 @@ artifacts:
 deploy_script:
   - ps: |
       if ($Env:APPVEYOR_REPO_TAG -eq $true) {
-          write-host "test"
+          cd "$($Env:APPVEYOR_BUILD_FOLDER)\extension\EFDocumentationGenerator.Package"
+          $nugetCache = nuget locals all -list | where { $_ -like 'global-packages:*' } | %{ $_ -split ': ' } | select -last 1
+          $vsixPublisher = Get-ChildItem -File ($nugetCache + '\microsoft.vssdk.buildtools') -recurse |
+               where { $_.Name -eq 'VsixPublisher.exe' } | 
+               sort -Descending -Property CreationTime | 
+               select -First 1 -ExpandProperty FullName
+          & $vsixPublisher publish -payload $artifacts['vsix'].path -publishManifest 'manifest.json' -personalAccessToken $Env:publication_token
       }
