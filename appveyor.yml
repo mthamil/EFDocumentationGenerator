@@ -14,6 +14,8 @@ environment:
   major: 2
   minor: 3
   patch: 0
+  publication_token:
+    secure: zdEn8EOBXHZa4gnNjtzCd2STHNsGuYvmqDS9nadj09gKLSy0kQinOx8yY3LtfGYOQgjspUVnRH+Iabw9NtvI4g==
 
 
 # scripts that are called at very beginning, before repo cloning
@@ -86,5 +88,11 @@ artifacts:
 
 deploy_script:
   - ps: |
-     cd "$($Env:APPVEYOR_BUILD_FOLDER)\extension"
-     write-host $artifacts['vsix'].path
+     if (!$env:APPVEYOR_REPO_TAG) { return }
+     cd "$($Env:APPVEYOR_BUILD_FOLDER)\extension\EFDocumentationGenerator.Package"
+     $nugetCache = nuget locals all -list | where { $_ -like 'global-packages:*' } | %{ $_ -split ': ' } | select -last 1
+     $vsixPublisher = Get-ChildItem -File ($nugetCache + '\microsoft.vssdk.buildtools') -recurse |
+         where { $_.Name -eq 'VsixPublisher.exe' } | 
+         sort -Descending -Property CreationTime | 
+         select -First 1 -ExpandProperty FullName
+     & $vsixPublisher publish -payload $artifacts['vsix'].path -publishManifest 'manifest.json' -personalAccessToken $Env:publication_token
