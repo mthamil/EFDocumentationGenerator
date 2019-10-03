@@ -48,8 +48,8 @@ namespace DocumentationGenerator
             // that is being mapped is specified by the StoreEntitySet attribute of the 
             // child MappingFragment element.
             _mappings = edmxDocument.Cs().Descendants("EntitySetMapping")
-                                          .SelectMany(es => es.Cs().Elements("EntityTypeMapping"))
-                                          .ToDictionary(et => Sanitize(et.Attribute("TypeName").Value),
+                                         .SelectMany(es => es.Cs().Elements("EntityTypeMapping"))
+                                         .ToDictionary(et => Sanitize(et.Attribute("TypeName").Value),
                                                         et => new EntityStorageModel(et));
         }
 
