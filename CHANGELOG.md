@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.3.0
+
+ - Support Visual Studio 2019.
 
 ## v2.2.0
 
