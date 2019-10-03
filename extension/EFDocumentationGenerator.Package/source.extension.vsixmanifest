@@ -8,7 +8,7 @@
         <License>LICENSE.txt</License>
         <ReleaseNotes>CHANGELOG.md</ReleaseNotes>
         <Icon>icon.png</Icon>
-        <Tags>Database, Documentation, Entity Framework, Entity Designer, edmx</Tags>
+        <Tags>Database, Documentation, Entity Framework</Tags>
     </Metadata>
     <Installation>
         <InstallationTarget Version="[15.0,17.0)" Id="Microsoft.VisualStudio.Community" />
